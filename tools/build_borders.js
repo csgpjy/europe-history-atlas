@@ -213,6 +213,7 @@ function buildYear(year) {
     if (!(b[2] >= BOX[0] && b[0] <= BOX[2] && b[3] >= BOX[1] && b[1] <= BOX[3])) continue;
     const shape = shapePaths(f.geometry);
     if (!shape.d) continue;
+    if (shape.d.split('L').length < 10 || shape.a < 8) continue;
     features.push({
       n: name,
       s: props.SUBJECTO || '',

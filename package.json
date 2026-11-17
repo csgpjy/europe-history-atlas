@@ -1,0 +1,12 @@
+{
+  "name": "europe-history-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive historical atlas of early modern Europe, 1500–1900.",
+  "scripts": {
+    "fetch": "node tools/fetch_assets.js",
+    "build": "node tools/build_borders.js",
+    "validate": "node tools/validate.js",
+    "serve": "python -m http.server 8000"
+  }
+}

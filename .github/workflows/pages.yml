@@ -32,6 +32,9 @@ jobs:
       - name: Build projected SVG atlas
         run: node tools/build_borders.js
 
+      - name: Validate atlas data
+        run: node tools/validate.js
+
       - name: Assemble site
         run: |
           mkdir -p _site/css _site/js _site/data _site/vendor
