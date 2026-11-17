@@ -41,7 +41,7 @@ jobs:
           cp index.html _site/
           cp css/style.css _site/css/
           cp js/app.js _site/js/
-          cp data/events.js data/borders.js _site/data/
+          cp data/events.js data/events-meta.js data/events-extra.js data/borders.js _site/data/
           cp vendor/d3.min.js vendor/topojson-client.min.js _site/vendor/
           touch _site/.nojekyll
 
