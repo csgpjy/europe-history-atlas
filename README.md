@@ -33,15 +33,14 @@ node tools/build_borders.js  # 裁剪、简化、预投影 → data/borders.js
 
 ## 部署
 
-推送到 `main` 后，`.github/workflows/pages.yml` 会：
+推送到 `main` 后，`.github/workflows/pages.yml`（运行名 **Build and publish atlas**）会：
 
 1. 下载 D3 与七个年份的历史边界；
 2. 在 Node 中完成裁剪 / 简化 / 圆锥投影，输出 `data/borders.js`；
-3. 组装 `_site/` 并发布到 GitHub Pages。
+3. 运行 `tools/validate.js` 做数据校验；
+4. 组装 `_site/` 并推送到 **`gh-pages`** 分支。
 
-首次部署需要在仓库 **Settings → Pages → Build and deployment** 中把 Source 设为 **GitHub Actions**（工作流中的 `configure-pages` 也会尝试自动启用）。
-
-> 如果希望跳过 Actions 权限，也可以选择 **Deploy from a branch → `gh-pages` / root**：CI 已经把构建产物推到该分支。详见 [DEPLOY.md](DEPLOY.md)。
+首次部署只需在仓库 **Settings → Pages → Build and deployment** 中把 Source 设为 **Deploy from a branch**，Branch 选 **`gh-pages`**，目录保持 **`/ (root)`**，保存即可。详见 [DEPLOY.md](DEPLOY.md)。
 
 ## 目录
 
