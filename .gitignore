@@ -1,0 +1,7 @@
+node_modules/
+data/geo/
+data/borders.json
+vendor/
+.preview*.png
+_site/
+.tmp/
