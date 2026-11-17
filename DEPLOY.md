@@ -1,37 +1,32 @@
 # 部署说明
 
-站点是纯静态文件。GitHub Actions 会在每次推送到 `main` 时构建并校验，然后把构建产物强制推送到 **`gh-pages` 分支**（含 `.nojekyll`）。
-
-因此启用线上站点只需要 **一个手动开关**：
-
-## 启用 Pages
-
-1. 打开 <https://github.com/csgpjy/europe-history-atlas/settings/pages>
-2. **Build and deployment → Source** 选择 **Deploy from a branch**
-3. **Branch** 选择 **`gh-pages`**，目录保持 **`/ (root)`**
-4. 点 **Save**
-
-约 30 秒后访问：
+站点已上线：
 
 ```
 https://csgpjy.github.io/europe-history-atlas/
 ```
 
-之后每次 `main` 有更新，工作流 **Build and publish atlas** 会自动重建并刷新 `gh-pages`，不需要再进设置。
+GitHub Pages 的 **Source 为 GitHub Actions**。每次推送到 `main`，工作流 **Build, validate and deploy atlas** 会：
 
-## 为什么不能全自动
+1. 下载 D3 与 7 个年份的历史边界；
+2. 裁剪 / 简化 / 圆锥投影，生成 `data/borders.js`；
+3. 运行 `tools/validate.js` 校验事件与地图数据；
+4. 组装 `_site/`；
+5. 同时更新 **`gh-pages` 分支**（镜像）并通过 GitHub Actions 部署线上站点。
 
-GitHub 的 Pages 创建接口要求**仓库管理员身份**；Actions 使用的 `GITHUB_TOKEN` 即使声明了 `pages: write`，也没有创建 Pages 站点的权限（实测 `POST /pages` 返回 403，`GET /pages` 为 404）。所以最后这个开关必须由仓库所有者在网页上点一次。
+## 为什么之前卡住
 
-## 如果看不到 Source 下拉框
+GitHub 的 Pages 创建接口要求**仓库管理员身份**；Actions 的 `GITHUB_TOKEN` 即使声明了 `pages: write`，也无法创建 Pages 站点（`GET /pages` 404、`POST /pages` 403）。仓库所有者在 Settings → Pages 中启用后，部署链路即可全自动运行。
 
-常见原因：
+## 日常更新
 
-- **账号邮箱未验证**：打开 <https://github.com/settings/emails> 完成验证后刷新；
-- **仓库不是公开的**：免费账户的 Pages 需要公开仓库；
-- **账号较新/被风控**：GitHub 可能要求先完成验证，按页面提示操作。
+直接改 `main` 上的源码并推送即可，不需要再进 Pages 设置。构建产物（`data/borders.js`、`vendor/`）由 CI 生成，不提交到仓库。
 
-把设置页的提示原文发出来即可继续排查。
+## 故障排查
+
+- **Actions 在 “Fetch map sources” 失败**：CI 优先使用 `raw.githubusercontent.com`，GitHub API 作为兜底；若仍失败，检查仓库 Actions 的网络或限流。
+- **部署成功但页面 404**：确认 Settings → Pages 的 Source 仍为 **GitHub Actions**，并检查 `github-pages` environment 的部署记录。
+- **本地打开空白**：直接双击 `index.html` 需要同目录存在 `vendor/d3.min.js` 与 `data/borders.js`，这两个是构建产物。
 
 ## 本地预览
 

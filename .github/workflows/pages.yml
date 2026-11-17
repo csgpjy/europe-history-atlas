@@ -1,4 +1,4 @@
-name: Build and publish atlas
+name: Build, validate and deploy atlas
 
 on:
   push:
@@ -7,9 +7,11 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: atlas-publish
+  group: atlas-deploy
   cancel-in-progress: true
 
 jobs:
@@ -43,7 +45,7 @@ jobs:
           cp vendor/d3.min.js vendor/topojson-client.min.js _site/vendor/
           touch _site/.nojekyll
 
-      - name: Publish gh-pages branch
+      - name: Mirror to gh-pages branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -55,3 +57,22 @@ jobs:
           git add -A
           git commit -q -m "deploy: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

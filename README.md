@@ -2,6 +2,8 @@
 
 一个面向历史教学与自主学习的交互式历史地图：以 1500–1900 年间七个政权边界快照为骨架，串联十二个关键事件，把「地图上的空间变化」与「时间轴上的因果链」放在同一屏里。
 
+**在线地址：<https://csgpjy.github.io/europe-history-atlas/>**
+
 ## 特点
 
 - **历史地图 × 时间轴**：拖动 1490–1905 年时间轴，地图在 1500 / 1600 / 1700 / 1715 / 1783 / 1815 / 1900 七个边界快照间淡入切换。
@@ -33,14 +35,16 @@ node tools/build_borders.js  # 裁剪、简化、预投影 → data/borders.js
 
 ## 部署
 
-推送到 `main` 后，`.github/workflows/pages.yml`（运行名 **Build and publish atlas**）会：
+站点已上线：<https://csgpjy.github.io/europe-history-atlas/>。GitHub Pages 的 **Source 为 GitHub Actions**。
+
+每次推送到 `main`，`.github/workflows/pages.yml`（运行名 **Build, validate and deploy atlas**）会：
 
 1. 下载 D3 与七个年份的历史边界；
 2. 在 Node 中完成裁剪 / 简化 / 圆锥投影，输出 `data/borders.js`；
 3. 运行 `tools/validate.js` 做数据校验；
-4. 组装 `_site/` 并推送到 **`gh-pages`** 分支。
+4. 组装 `_site/`，更新 **`gh-pages`** 镜像分支，并通过 Actions 部署线上站点。
 
-首次部署只需在仓库 **Settings → Pages → Build and deployment** 中把 Source 设为 **Deploy from a branch**，Branch 选 **`gh-pages`**，目录保持 **`/ (root)`**，保存即可。详见 [DEPLOY.md](DEPLOY.md)。
+详见 [DEPLOY.md](DEPLOY.md)。
 
 ## 目录
 
