@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -43,6 +43,20 @@ jobs:
           cp js/app.js _site/js/
           cp data/events.js data/borders.js _site/data/
           cp vendor/d3.min.js vendor/topojson-client.min.js _site/vendor/
+          touch _site/.nojekyll
+
+      - name: Publish gh-pages branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd _site
+          git init -q
+          git checkout -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "deploy: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
 
       - name: Ensure Pages site exists
         env:
@@ -53,7 +67,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages" \
-            -d '{"build_type":"workflow"}')
+            -d '{"build_type":"legacy","source":{"branch":"gh-pages","path":"/"}}')
           echo "Pages API HTTP $status"
           cat pages.json || true
           if [ "$status" != "201" ] && [ "$status" != "409" ]; then
