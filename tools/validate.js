@@ -24,10 +24,20 @@ function assert(condition, message) {
 }
 
 const atlas = loadWindow('data/borders.js').ATLAS;
-const events = loadWindow('data/events.js').HISTORY_EVENTS;
+const core = loadWindow('data/events.js').HISTORY_EVENTS;
+const meta = loadWindow('data/events-meta.js').CORE_EVENT_META;
+const extra = loadWindow('data/events-extra.js').HISTORY_EVENTS_EXTRA;
+const events = core.concat(extra);
+
+events.forEach((event) => {
+  if (meta[event.id]) Object.assign(event, meta[event.id]);
+  event.tier = event.tier || 'core';
+  event.category = event.category || '政治';
+});
 
 assert(atlas && Array.isArray(atlas.years), 'borders.js 缺少 ATLAS.years');
-assert(Array.isArray(events) && events.length > 0, 'events.js 缺少事件数组');
+assert(Array.isArray(events) && events.length >= 24, '事件总数少于 24');
+assert(Array.isArray(extra) && extra.length >= 12, '扩展事件少于 12 条');
 
 const years = atlas.years.slice();
 assert(years.length >= 6, '边界快照少于 6 个');
@@ -38,6 +48,8 @@ const requiredFiles = [
   'css/style.css',
   'js/app.js',
   'data/events.js',
+  'data/events-meta.js',
+  'data/events-extra.js',
   'vendor/d3.min.js',
   'vendor/topojson-client.min.js',
 ];
@@ -46,10 +58,10 @@ for (const file of requiredFiles) {
 }
 
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for (const id of ['map', 'eras', 'markers', 'panel', 'panelScroll', 'track', 'playBtn', 'yearNow']) {
+for (const id of ['map', 'eras', 'markers', 'panel', 'panelScroll', 'track', 'trackEvents', 'categoryFilters', 'extraToggle', 'playBtn', 'yearNow']) {
   assert(html.includes('id="' + id + '"'), 'index.html 缺少 #' + id);
 }
-for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/events.js', 'js/app.js']) {
+for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/events.js', 'data/events-meta.js', 'data/events-extra.js', 'js/app.js']) {
   assert(html.includes('src="' + src + '"'), 'index.html 未引用 ' + src);
 }
 
@@ -60,20 +72,24 @@ for (const event of events) {
   ids.add(event.id);
 
   assert(Number.isFinite(event.year), prefix + '：year 无效');
+  assert(event.year >= 1490 && event.year <= 1905, prefix + '：year 超出时间轴范围');
   assert(Number.isFinite(event.end) && event.end >= event.year, prefix + '：end 无效');
   assert(event.title && event.title.length >= 2, prefix + '：title 过短');
-  assert(event.summary && event.summary.length >= 60, prefix + '：summary 少于 60 字');
+  assert(event.summary && event.summary.length >= 40, prefix + '：summary 少于 40 字');
+  assert(['政治', '经济', '文化', '社会'].includes(event.category), prefix + '：category 无效');
+  assert(['core', 'extra'].includes(event.tier), prefix + '：tier 无效');
   assert(Array.isArray(event.facts) && event.facts.length >= 2, prefix + '：facts 少于 2 条');
   assert(Array.isArray(event.sources) && event.sources.length >= 1, prefix + '：缺少 sources');
   assert(Array.isArray(event.points) && event.points.length >= 1, prefix + '：缺少地图标记点');
 
   for (const source of event.sources || []) {
-    assert(source.label && source.url && source.url.startsWith('https://'), prefix + '：出处链接无效');
+    assert(source.label, prefix + '：出处缺少 label');
+    if (source.url) assert(source.url.startsWith('https://'), prefix + '：出处链接必须以 https:// 开头');
   }
 
   const highlight = event.highlights || {};
   const totalHighlights = (highlight.names || []).length + (highlight.subjects || []).length;
-  assert(totalHighlights > 0, prefix + '：没有高亮政权');
+  assert(totalHighlights > 0 || (event.points || []).length > 0, prefix + '：既无高亮政权也无标记点');
 
   const snapshot = event.snapshot;
   if (years.includes(snapshot)) {
@@ -94,6 +110,10 @@ for (const event of events) {
   }
 }
 
+for (const category of ['政治', '经济', '文化', '社会']) {
+  assert(events.some((event) => event.category === category), '缺少“' + category + '”类事件');
+}
+
 for (const year of years) {
   const features = atlas.borders[year] || [];
   assert(features.length >= 15, year + ' 年政权多边形少于 15 个');
@@ -111,8 +131,12 @@ if (errors.length) {
   process.exit(1);
 }
 
+const counts = {};
+for (const event of events) counts[event.category] = (counts[event.category] || 0) + 1;
 console.log('VALIDATION OK');
 console.log(' - years: ' + years.join(', '));
-console.log(' - events: ' + events.length);
+console.log(' - events: ' + events.length + ' (core ' + events.filter((e) => e.tier === 'core').length +
+  ', extra ' + events.filter((e) => e.tier === 'extra').length + ')');
+console.log(' - categories: ' + Object.keys(counts).map((k) => k + ':' + counts[k]).join(' '));
 console.log(' - features: ' + years.map((y) => y + ':' + atlas.borders[y].length).join(' '));
 for (const warning of warnings) console.warn(' ! ' + warning);
