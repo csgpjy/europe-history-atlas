@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="欧洲近代早期史交互地图：1500–1900 年七个历史切面、十二个关键事件，从意大利战争到德意志统一。" />
+  <meta name="description" content="欧洲近代早期史交互地图：1500–1900 年七个历史切面、30 个政治经济文化社会事件，从意大利战争到第二次工业革命。" />
   <meta name="theme-color" content="#0a0e17" />
   <title>EUROPA 1500–1900 · 近代早期欧洲交互史</title>
   <link rel="stylesheet" href="css/style.css" />
@@ -78,8 +78,22 @@
         <div class="snapshot-chips" id="snapshotChips" aria-label="边界快照年份"></div>
       </div>
 
+      <div class="filters" id="filters">
+        <div class="filter-group" id="categoryFilters" role="group" aria-label="按类别筛选事件">
+          <button class="filter is-on" type="button" data-cat="all">全部</button>
+          <button class="filter" type="button" data-cat="政治">政治</button>
+          <button class="filter" type="button" data-cat="经济">经济</button>
+          <button class="filter" type="button" data-cat="文化">文化</button>
+          <button class="filter" type="button" data-cat="社会">社会</button>
+        </div>
+        <button class="filter filter-extra" type="button" id="extraToggle" aria-pressed="false">
+          扩展事件 <span id="extraCount">18</span>
+        </button>
+      </div>
+
       <div class="track" id="track" role="slider" tabindex="0"
            aria-label="年份滑块" aria-valuemin="1490" aria-valuemax="1905" aria-valuenow="1700">
+        <div class="track-events" id="trackEvents"></div>
         <div class="track-progress" id="trackProgress"></div>
         <div class="track-playhead" id="trackPlayhead"></div>
       </div>
@@ -96,6 +110,8 @@
   <script src="vendor/d3.min.js"></script>
   <script src="data/borders.js"></script>
   <script src="data/events.js"></script>
+  <script src="data/events-meta.js"></script>
+  <script src="data/events-extra.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

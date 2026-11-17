@@ -6,13 +6,25 @@
   'use strict';
 
   var ATLAS = window.ATLAS;
-  var EVENTS = window.HISTORY_EVENTS;
-  if (!ATLAS || !EVENTS) return;
+  var CORE_META = window.CORE_EVENT_META || {};
+  var EVENTS = (window.HISTORY_EVENTS || []).concat(window.HISTORY_EVENTS_EXTRA || []);
+  if (!ATLAS || !EVENTS.length) return;
 
+  EVENTS.forEach(function (event) {
+    var meta = CORE_META[event.id];
+    if (meta) {
+      event.tier = meta.tier;
+      event.category = meta.category;
+    }
+    event.tier = event.tier || 'core';
+    event.category = event.category || '政治';
+  });
+
+  var EXTRA_COUNT = (window.HISTORY_EVENTS_EXTRA || []).length;
   var YEARS = ATLAS.years.slice().sort(function (a, b) { return a - b; });
   var DOMAIN = [1490, 1905];
   var INITIAL = 1700;
-  var state = { year: INITIAL, era: INITIAL, activeId: null, playing: false };
+  var state = { year: INITIAL, era: INITIAL, activeId: null, playing: false, category: 'all', showExtra: false };
 
   var CN = {
     France: '法兰西', Spain: '西班牙', Portugal: '葡萄牙', England: '英格兰',
@@ -32,6 +44,7 @@
     Greece: '希腊', Serbia: '塞尔维亚', Romania: '罗马尼亚', Bulgaria: '保加利亚',
     Hungary: '匈牙利', 'Imperial Hungary': '匈牙利', 'Crimean Khanate': '克里米亚汗国',
     Morocco: '摩洛哥', 'United Kingdom of Great Britain and Ireland': '英国',
+    'United Kingdom': '英国', 'Kingdom of Ireland': '爱尔兰',
     'United Kingdom of Netherlands': '尼德兰联合王国', Lombardy: '伦巴第',
     Venetia: '威尼西亚', 'Republic of the Seven Zenden': '七州共和国',
     'Kalmar Union': '卡尔马联盟', 'Grand Duchy of Moscow': '莫斯科大公国',
@@ -50,6 +63,8 @@
     Anatolia: '安纳托利亚', Syria: '叙利亚', Palestine: '巴勒斯坦', Crete: '克里特',
     Tripoli: '的黎波里', Tunis: '突尼斯', Algiers: '阿尔及尔', Egypt: '埃及',
     Persia: '波斯', Arabs: '阿拉伯部落', 'Sámi': '萨米', Finnmark: '芬马克',
+    Poland: '波兰', Austria: '奥地利', 'Kingdom of the Two Sicilies': '两西西里',
+    'Austrian Netherlands': '奥属尼德兰', 'Milano (Austria)': '米兰（奥属）',
   };
 
   var SNAPSHOT_NOTES = {
@@ -87,6 +102,16 @@
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function isVisible(event) {
+    if (event.tier === 'extra' && !state.showExtra) return false;
+    if (state.category !== 'all' && event.category !== state.category) return false;
+    return true;
+  }
+
+  function visibleEvents() {
+    return EVENTS.filter(isVisible).sort(function (a, b) { return a.year - b.year; });
   }
 
   var svg = d3.select('#map');
@@ -181,9 +206,9 @@
   function updateMarkers() {
     markers.forEach(function (marker) {
       var e = marker.event;
-      var near = state.activeId === e.id
+      var near = isVisible(e) && (state.activeId === e.id
         || Math.abs(e.year - state.year) <= 7
-        || (state.year >= e.year - 1 && state.year <= (e.end || e.year) + 1);
+        || (state.year >= e.year - 1 && state.year <= (e.end || e.year) + 1));
       marker.node.classList.toggle('is-near', !!near);
       marker.node.classList.toggle('is-active', state.activeId === e.id);
     });
@@ -233,29 +258,45 @@
         '" data-snap="' + year + '">' + year + '</button>';
     }).join('');
 
-    var index = EVENTS.map(function (event) {
-      return '<li><button data-id="' + event.id + '"' +
-        (state.activeId === event.id ? ' class="is-on"' : '') + '>' +
-        '<span class="idx-year">' + escapeHtml(event.kicker) + '</span>' +
-        '<span class="idx-title">' + escapeHtml(event.title) + '</span>' +
-        '<span class="idx-dot"></span></button></li>';
+    var visible = visibleEvents();
+    var groups = ['政治', '经济', '文化', '社会'].map(function (category) {
+      var items = visible.filter(function (event) { return event.category === category; });
+      if (!items.length) return '';
+      var list = items.map(function (event) {
+        return '<li><button data-id="' + event.id + '"' +
+          (state.activeId === event.id ? ' class="is-on"' : '') + '>' +
+          '<span class="idx-year">' + escapeHtml(event.kicker) + '</span>' +
+          '<span class="idx-title">' + escapeHtml(event.title) + '</span>' +
+          '<span class="idx-dot"></span></button></li>';
+      }).join('');
+      return '<div class="idx-group"><h4>' + category + '<span>' + items.length +
+        '</span></h4><ul class="event-index">' + list + '</ul></div>';
     }).join('');
+
+    var filterNote = !state.showExtra && state.category === 'all'
+      ? '<p class="panel-note">当前只显示 12 条核心事件。打开时间轴上方的「扩展事件」可查看 ' +
+        EXTRA_COUNT + ' 条经济、文化与社会史条目；也可按类别筛选。</p>'
+      : '';
 
     panelScroll.innerHTML =
       '<div class="panel-kicker">阅读指南</div>' +
-      '<h2>四百年，<em>七个切面</em></h2>' +
-      '<p class="panel-summary">地图以 1500 至 1900 年间的七个政权边界快照为骨架，串联十二个关键事件。' +
-      '拖动下方时间轴浏览时代，点击紫色菱形或地图上的脉冲标记，进入具体事件的史料与空间细节。</p>' +
+      '<h2>四百年，<em>' + EVENTS.length + ' 个切面</em></h2>' +
+      '<p class="panel-summary">地图以 1500 至 1900 年间的七个政权边界快照为骨架，串联 ' +
+      EVENTS.length + ' 个事件（核心 12 条、扩展 ' + EXTRA_COUNT + ' 条）。' +
+      '拖动时间轴浏览时代，按政治 / 经济 / 文化 / 社会筛选，点击紫色菱形或地图脉冲标记查看史料与空间细节。</p>' +
       '<div class="panel-section"><h3>如何使用</h3><ul class="fact-list">' +
       '<li><b>拖动</b><span>时间轴滑块，地图会切换到最接近的边界快照</span></li>' +
-      '<li><b>点击</b><span>事件菱形或紫色标记，查看事件详情与高亮政权</span></li>' +
+      '<li><b>筛选</b><span>时间轴上方切换类别，或展开「扩展事件」</span></li>' +
+      '<li><b>点击</b><span>事件菱形或紫色标记，查看详情与高亮政权</span></li>' +
       '<li><b>播放</b><span>按下左侧 ▶，观看 1500–1900 年的连续演进</span></li>' +
       '</ul></div>' +
       '<div class="panel-section"><h3>边界快照</h3><div class="chip-row">' + chips + '</div></div>' +
-      '<div class="panel-section"><h3>事件索引</h3><ul class="event-index">' + index + '</ul></div>' +
+      '<div class="panel-section"><h3>事件索引</h3>' +
+      (groups || '<p class="panel-note">当前筛选没有事件。</p>') + '</div>' +
+      filterNote +
       '<p class="panel-note">边界为学术重建的示意数据，细部与同期实际控制存在差异；' +
-      '事件年代与史实以知识面板所列出处为准。</p>' +
-      '<div class="panel-foot">数据：historical-basemaps（GPL-3.0）· Natural Earth · D3</div>';
+      '事件年代与史实以知识面板所列教材章节与延伸阅读为准。</p>' +
+      '<div class="panel-foot">史料：吴于廑、齐世荣主编《世界史·近代史编》上/下卷 · 数据：historical-basemaps（GPL-3.0）· D3</div>';
 
     panelScroll.querySelectorAll('[data-snap]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -277,13 +318,17 @@
       return '<li><b>' + escapeHtml(fact.y) + '</b><span>' + escapeHtml(fact.t) + '</span></li>';
     }).join('');
     var sources = (event.sources || []).map(function (source) {
-      return '<li><a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">' +
-        escapeHtml(source.label) + '</a></li>';
+      if (source.url) {
+        return '<li><a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">' +
+          escapeHtml(source.label) + '</a></li>';
+      }
+      return '<li><span class="source-text">' + escapeHtml(source.label) + '</span></li>';
     }).join('');
 
     panelScroll.innerHTML =
       '<button class="back-link" id="backBtn">← 返回时期概览</button>' +
-      '<div class="panel-kicker">' + escapeHtml(event.kicker) + '</div>' +
+      '<div class="panel-kicker"><span class="cat-badge">' + escapeHtml(event.category) + '</span>' +
+      escapeHtml(event.kicker) + (event.tier === 'extra' ? ' · 扩展' : '') + '</div>' +
       '<h2>' + escapeHtml(event.title) + '</h2>' +
       '<p class="panel-summary">' + escapeHtml(event.summary) + '</p>' +
       '<div class="panel-section"><h3>关键节点</h3><ul class="fact-list">' + facts + '</ul></div>' +
@@ -311,16 +356,15 @@
     return ((year - DOMAIN[0]) / (DOMAIN[1] - DOMAIN[0])) * 100;
   }
 
-  function buildTimeline() {
-    for (var year = 1500; year <= 1900; year += 50) {
-      var tick = document.createElement('div');
-      tick.className = 'axis-tick';
-      tick.style.left = percent(year) + '%';
-      tick.innerHTML = '<span>' + year + '</span>';
-      track.appendChild(tick);
-    }
+  var trackEvents = document.getElementById('trackEvents');
+  var categoryFilters = document.getElementById('categoryFilters');
+  var extraToggle = document.getElementById('extraToggle');
+  var extraCount = document.getElementById('extraCount');
 
-    EVENTS.forEach(function (event, index) {
+  function renderTrackEvents() {
+    if (!trackEvents) return;
+    trackEvents.innerHTML = '';
+    visibleEvents().forEach(function (event, index) {
       var button = document.createElement('button');
       button.className = 'track-event';
       button.type = 'button';
@@ -334,8 +378,65 @@
         e.stopPropagation();
         selectEvent(event.id);
       });
-      track.appendChild(button);
+      trackEvents.appendChild(button);
     });
+    updateTimeline();
+  }
+
+  function syncFilterUI() {
+    if (categoryFilters) {
+      categoryFilters.querySelectorAll('.filter').forEach(function (button) {
+        button.classList.toggle('is-on', button.getAttribute('data-cat') === state.category);
+      });
+    }
+    if (extraToggle) {
+      extraToggle.classList.toggle('is-on', state.showExtra);
+      extraToggle.setAttribute('aria-pressed', state.showExtra ? 'true' : 'false');
+    }
+  }
+
+  function refreshFilters() {
+    syncFilterUI();
+    renderTrackEvents();
+    updateMarkers();
+    if (state.activeId) {
+      var active = EVENTS.filter(function (event) { return event.id === state.activeId; })[0];
+      if (!active || !isVisible(active)) clearEvent();
+    } else {
+      overviewPanel();
+    }
+  }
+
+  function setupFilters() {
+    if (extraCount) extraCount.textContent = EXTRA_COUNT;
+    if (categoryFilters) {
+      categoryFilters.addEventListener('click', function (e) {
+        var button = e.target.closest('[data-cat]');
+        if (!button) return;
+        state.category = button.getAttribute('data-cat');
+        if (state.category !== 'all' && state.category !== '政治') state.showExtra = true;
+        refreshFilters();
+      });
+    }
+    if (extraToggle) {
+      extraToggle.addEventListener('click', function () {
+        state.showExtra = !state.showExtra;
+        if (!state.showExtra && state.category !== 'all' && state.category !== '政治') {
+          state.category = 'all';
+        }
+        refreshFilters();
+      });
+    }
+  }
+
+  function buildTimeline() {
+    for (var year = 1500; year <= 1900; year += 50) {
+      var tick = document.createElement('div');
+      tick.className = 'axis-tick';
+      tick.style.left = percent(year) + '%';
+      tick.innerHTML = '<span>' + year + '</span>';
+      track.appendChild(tick);
+    }
 
     YEARS.forEach(function (year) {
       var button = document.createElement('button');
@@ -349,6 +450,9 @@
       });
       snapshotChips.appendChild(button);
     });
+
+    renderTrackEvents();
+    syncFilterUI();
   }
 
   function updateTimeline() {
@@ -386,7 +490,12 @@
   function selectEvent(id) {
     var event = EVENTS.filter(function (e) { return e.id === id; })[0];
     if (!event) return;
+    if (!isVisible(event)) {
+      state.category = 'all';
+      state.showExtra = true;
+    }
     state.activeId = id;
+    refreshFilters();
     setYear(event.year, { keepEvent: true, era: eraForEvent(event) });
     applyHighlight(event);
     eventPanel(event);
@@ -527,6 +636,15 @@
   });
 
   /* ── 启动 ───────────────────────────────────────── */
+  var params = new URLSearchParams(location.search);
+  var initialCategory = params.get('cat');
+  if (['政治', '经济', '文化', '社会'].indexOf(initialCategory) !== -1) {
+    state.category = initialCategory;
+    if (initialCategory !== '政治') state.showExtra = true;
+  }
+  if (params.get('extra') === '1') state.showExtra = true;
+
+  setupFilters();
   buildTimeline();
   overviewPanel();
   setYear(INITIAL);
