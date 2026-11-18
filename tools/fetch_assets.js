@@ -65,6 +65,21 @@ async function main() {
     path.join(vendor, 'topojson-client.min.js'),
   );
 
+  await download(
+    [
+      'https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js',
+      'https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.js',
+    ],
+    path.join(vendor, 'maplibre-gl.js'),
+  );
+  await download(
+    [
+      'https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css',
+      'https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.css',
+    ],
+    path.join(vendor, 'maplibre-gl.css'),
+  );
+
   for (const year of YEARS) {
     const dest = path.join(geo, 'world_' + year + '.geojson');
     if (fs.existsSync(dest) && fs.statSync(dest).size > 100000) {
