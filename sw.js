@@ -1,5 +1,5 @@
 /* Service Worker：主站应用壳离线缓存；研究模式数据按访问运行时缓存。 */
-const VERSION = 'europa-2026-11-18-4';
+const VERSION = 'europa-2026-11-18-5';
 const CACHE = 'atlas-' + VERSION;
 
 const CORE = [
