@@ -85,6 +85,7 @@ assert(html.includes('href="wars.html"'), 'index.html 未链接战争线页面')
 assert(html.includes('href="research.html"'), 'index.html 未链接研究模式');
 assert(html.includes('href="manifest.webmanifest"'), 'index.html 未引用 manifest');
 assert(html.includes('src="js/pwa.js"'), 'index.html 未引用 pwa.js');
+assert(html.includes('id="warLineLink"') && html.includes('id="warOverlay"'), 'index.html 缺少主站战争视图');
 
 const warHtml = fs.readFileSync(path.join(root, 'wars.html'), 'utf8');
 for (const id of ['map', 'eras', 'sideLabels', 'battles', 'warPanel', 'warTimeline', 'warTrack', 'warAxis', 'warLanes']) {
@@ -111,12 +112,14 @@ const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifes
 assert(manifest.name && manifest.short_name, 'manifest 缺少 name/short_name');
 assert(manifest.start_url === './' && manifest.scope === './', 'manifest start_url/scope 必须是相对路径');
 assert(manifest.display === 'standalone', 'manifest display 必须是 standalone');
+assert(Array.isArray(manifest.shortcuts) && manifest.shortcuts.some((shortcut) => shortcut.url === './#wars'), 'manifest 缺少战争线快捷方式');
 for (const icon of manifest.icons || []) {
   assert(fs.existsSync(path.join(root, icon.src)), 'manifest 图标不存在：' + icon.src);
 }
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 assert(sw.includes('serviceWorker') === false && sw.includes('caches.open'), 'sw.js 缺少缓存逻辑');
 assert(sw.includes('./index.html') && sw.includes('./data/borders.js'), 'sw.js 核心缓存不完整');
+assert(sw.includes('ignoreSearch'), 'sw.js 导航回退应按 ignoreSearch 匹配嵌入页');
 
 const researchIndex = JSON.parse(fs.readFileSync(path.join(root, 'data', 'research', 'index.json'), 'utf8'));
 assert(Array.isArray(researchIndex.years) && researchIndex.years.length === 10, 'research/index.json 快照数量不为 10');
