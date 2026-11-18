@@ -351,6 +351,17 @@ button { font: inherit; color: inherit; }
   border-color: var(--cyan);
 }
 
+.install-entry-link {
+  margin-left: 12px;
+  color: var(--ink-mute);
+  border-bottom-color: rgba(167, 173, 189, 0.3);
+}
+
+.install-entry-link:hover {
+  color: var(--ink);
+  border-color: rgba(167, 173, 189, 0.6);
+}
+
 .pwa-install {
   position: fixed;
   left: 14px;
@@ -550,6 +561,20 @@ input {
 }
 
 .pwa-help-ok:hover { border-color: var(--cyan); color: #ecfeff; }
+
+.pwa-help-link {
+  display: block;
+  margin-top: 8px;
+  padding: 9px 0 0;
+  border-top: 1px solid rgba(201, 169, 97, 0.18);
+  color: var(--cyan);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-decoration: none;
+}
+
+.pwa-help-link:hover { color: #ecfeff; }
 
 @media (max-width: 520px) {
   .pwa-help { padding: 12px; }
@@ -1254,14 +1279,25 @@ input {
 }
 
 @media (max-width: 520px) {
-  .masthead h1 { font-size: 22px; letter-spacing: 0.06em; }
-  .masthead h1 em { display: block; margin: 6px 0 0; font-size: 12px; }
-  .masthead { max-width: calc(100vw - 36px); }
-  .war-entry-link { display: block; width: max-content; max-width: 100%; margin-top: 8px; }
-  .war-entry-link + .war-entry-link { margin-top: 5px; }
+  .masthead { padding: 14px 14px 0; max-width: calc(100vw - 24px); }
+  .brand-eyebrow { font-size: 9px; letter-spacing: 0.2em; margin-bottom: 6px; }
+  .masthead h1 { font-size: 21px; letter-spacing: 0.05em; }
+  .masthead h1 em { display: inline-block; margin: 0 0 0 6px; font-size: 11px; }
+  .war-entry-link { margin: 8px 10px 0 0; font-size: 9px; letter-spacing: 0.12em; }
+  .war-entry-link + .war-entry-link { margin-top: 8px; }
   .research-entry-link { margin-left: 0; }
+  .install-entry-link { margin-left: 0; }
   .panel { max-height: 50vh; }
   .track-event:nth-child(even) { top: 4px; }
+}
+
+@media (display-mode: standalone) {
+  .masthead { padding-top: calc(14px + env(safe-area-inset-top)); }
+  .timeline { bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .war-overlay-bar {
+    min-height: calc(42px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
