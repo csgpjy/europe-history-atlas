@@ -352,14 +352,14 @@ button { font: inherit; color: inherit; }
 }
 
 .install-entry-link {
-  margin-left: 12px;
-  color: var(--ink-mute);
-  border-bottom-color: rgba(167, 173, 189, 0.3);
+  margin-left: 16px;
+  color: #fde68a;
+  border-bottom-color: rgba(251, 191, 36, 0.35);
 }
 
 .install-entry-link:hover {
-  color: var(--ink);
-  border-color: rgba(167, 173, 189, 0.6);
+  color: #fef3c7;
+  border-color: #fbbf24;
 }
 
 .pwa-install {
@@ -533,6 +533,16 @@ input {
   line-height: 1.8;
 }
 
+.pwa-help-link {
+  display: inline-block;
+  margin: 0 0 14px;
+  color: var(--cyan);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(34, 211, 238, 0.3);
+}
+
 .pwa-help-close {
   position: absolute;
   top: 8px;
@@ -561,20 +571,6 @@ input {
 }
 
 .pwa-help-ok:hover { border-color: var(--cyan); color: #ecfeff; }
-
-.pwa-help-link {
-  display: block;
-  margin-top: 8px;
-  padding: 9px 0 0;
-  border-top: 1px solid rgba(201, 169, 97, 0.18);
-  color: var(--cyan);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-align: center;
-  text-decoration: none;
-}
-
-.pwa-help-link:hover { color: #ecfeff; }
 
 @media (max-width: 520px) {
   .pwa-help { padding: 12px; }
@@ -1279,11 +1275,24 @@ input {
 }
 
 @media (max-width: 520px) {
-  .masthead { padding: 14px 14px 0; max-width: calc(100vw - 24px); }
-  .brand-eyebrow { font-size: 9px; letter-spacing: 0.2em; margin-bottom: 6px; }
-  .masthead h1 { font-size: 21px; letter-spacing: 0.05em; }
-  .masthead h1 em { display: inline-block; margin: 0 0 0 6px; font-size: 11px; }
-  .war-entry-link { margin: 8px 10px 0 0; font-size: 9px; letter-spacing: 0.12em; }
+  .masthead { max-width: calc(100vw - 24px); padding: 12px 14px; }
+  .brand-eyebrow { display: none; }
+  .masthead h1 { font-size: 24px; letter-spacing: 0.06em; white-space: nowrap; }
+  .masthead h1 em {
+    display: inline;
+    margin: 0 0 0 6px;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    vertical-align: 0.35em;
+  }
+  .war-entry-link {
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    margin: 8px 10px 0 0;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+  }
   .war-entry-link + .war-entry-link { margin-top: 8px; }
   .research-entry-link { margin-left: 0; }
   .install-entry-link { margin-left: 0; }
