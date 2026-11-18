@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="研究模式：OpenHistoricalMap 与 Cliopatria 历史边界数据原型，按需加载，附性能与授权说明。" />
+  <meta name="theme-color" content="#0a0e17" />
+  <title>RESEARCH MODE · OHM / Cliopatria 实验</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/research.css" />
+</head>
+<body class="research-body">
+  <div class="research-app">
+    <header class="research-head">
+      <span class="brand-eyebrow">Atlas Historicus · Method Lab</span>
+      <h1>RESEARCH <em>MODE</em></h1>
+      <p class="brand-sub">OHM / Cliopatria 历史边界实验 · 默认不加载外部服务</p>
+      <nav class="research-nav">
+        <a href="index.html">← 时代全景</a>
+        <a href="wars.html">战争线</a>
+      </nav>
+    </header>
+
+    <main class="research-grid">
+      <section class="research-card">
+        <div class="card-kicker">01 · OpenHistoricalMap</div>
+        <h2>按年份过滤的实时历史地图</h2>
+        <p class="research-copy">
+          OpenHistoricalMap 用带 <code>start_date</code> / <code>end_date</code> 的矢量要素描述历史地理，
+          可按年份过滤并自由缩放。下方用官方 embed 做低风险原型：只有点击加载后才请求外部服务。
+        </p>
+
+        <div class="research-controls">
+          <label for="researchYear">年份 <output id="researchYearOut">1700</output></label>
+          <input id="researchYear" type="range" min="1490" max="1905" step="1" value="1700" />
+          <div class="research-buttons">
+            <button id="ohmLoad" type="button" class="research-btn primary">加载实时图层</button>
+            <button id="ohmUnload" type="button" class="research-btn">卸载</button>
+            <a id="ohmOpen" class="research-btn link" href="https://embed.openhistoricalmap.org/" target="_blank" rel="noopener noreferrer">新窗口打开</a>
+          </div>
+        </div>
+
+        <div class="ohm-frame-wrap" id="ohmFrameWrap">
+          <div class="ohm-placeholder" id="ohmPlaceholder">
+            默认不加载外部地图服务。<br />
+            点击“加载实时图层”后，才会创建 OHM iframe。
+          </div>
+        </div>
+        <p class="research-status" id="ohmStatus">状态：未加载</p>
+        <p class="research-note">
+          OHM 数据以 CC0 / 公有领域发布；iframe 仅用于验证可达性与首屏性能，生产版建议
+          MapLibre GL JS + <code>maplibre-gl-dates</code> + 自托管矢量瓦片，避免第三方服务波动。
+        </p>
+      </section>
+
+      <aside class="research-aside">
+        <section class="research-card">
+          <div class="card-kicker">02 · Cliopatria</div>
+          <h2>逐年政治实体数据</h2>
+          <p class="research-copy">
+            Seshat 的 Cliopatria 以年份区间记录全球政治实体的多边形，适合做“逐年边界”而不是七张快照。
+            数据由扫描历史地图集机器生成，作者明确提醒边界存在不确定性与版本差异。
+          </p>
+          <ul class="research-facts">
+            <li><b>1600+</b> 个政治实体</li>
+            <li><b>3400 BCE–2024</b> 年覆盖</li>
+            <li><b>CC BY 4.0</b> 数据许可</li>
+            <li><b>待审校</b> 1000–2024 年部分仍在复核</li>
+          </ul>
+          <div class="research-links">
+            <a href="https://github.com/Seshat-Global-History-Databank/cliopatria" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            <a href="https://zenodo.org/records/13363121" target="_blank" rel="noopener noreferrer">Zenodo ↗</a>
+            <a href="https://www.nature.com/articles/s41597-025-04516-9" target="_blank" rel="noopener noreferrer">论文 ↗</a>
+          </div>
+        </section>
+
+        <section class="research-card">
+          <div class="card-kicker">03 · 取舍</div>
+          <h2>保留 SVG 默认，研究模式独立</h2>
+          <ul class="research-list">
+            <li><b>默认</b>：现有 SVG 快照，首屏快、离线可用，适合课堂展示。</li>
+            <li><b>研究</b>：OHM 实时图层与 Cliopatria 逐年数据，按需加载，接受网络与性能波动。</li>
+            <li><b>下一步</b>：用 PMTiles 自托管切片，接 MapLibre + 日期过滤，替代 iframe。</li>
+            <li><b>授权</b>：OHM CC0；Cliopatria CC BY 4.0；现有历史边界 GPL-3.0；Natural Earth 公有领域。</li>
+          </ul>
+          <p class="research-note">
+            当前页面不改变主站默认加载体积；首次点击“加载实时图层”前，不产生任何 OHM 请求。
+          </p>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="research-foot">
+      <span>实验原型 · 数据与授权说明见仓库 DATA-LICENSE.md</span>
+      <span>OHM embed · Cliopatria (Seshat) · Natural Earth</span>
+    </footer>
+  </div>
+
+  <script src="js/research.js"></script>
+</body>
+</html>
