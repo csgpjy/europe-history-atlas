@@ -7,8 +7,24 @@
 
   var ATLAS = window.ATLAS;
   var CORE_META = window.CORE_EVENT_META || {};
+  var SIGNIFICANCE = window.EVENT_SIGNIFICANCE || {};
+  var SIGNIFICANCE_SOURCES = window.EVENT_SIGNIFICANCE_SOURCES || {};
   var EVENTS = (window.HISTORY_EVENTS || []).concat(window.HISTORY_EVENTS_EXTRA || []);
   if (!ATLAS || !EVENTS.length) return;
+
+  function textbookSource(event) {
+    if (SIGNIFICANCE_SOURCES[event.id]) return SIGNIFICANCE_SOURCES[event.id];
+    var sources = event.sources || [];
+    for (var i = 0; i < sources.length; i += 1) {
+      if (sources[i].label && sources[i].label.indexOf('世界史·近代史编') !== -1) return sources[i].label;
+    }
+    return '';
+  }
+
+  EVENTS.forEach(function (event) {
+    event.significance = SIGNIFICANCE[event.id] || '';
+    event.significanceSource = textbookSource(event);
+  });
 
   EVENTS.forEach(function (event) {
     var meta = CORE_META[event.id];
@@ -345,6 +361,13 @@
       escapeHtml(event.kicker) + (event.tier === 'extra' ? ' · 扩展' : '') + '</div>' +
       '<h2>' + escapeHtml(event.title) + '</h2>' +
       '<p class="panel-summary">' + escapeHtml(event.summary) + '</p>' +
+      (event.significance
+        ? '<div class="panel-section significance-section"><h3>历史意义</h3><p>' +
+          escapeHtml(event.significance) + '</p>' +
+          (event.significanceSource
+            ? '<p class="source-inline">教材依据：' + escapeHtml(event.significanceSource) + '</p>'
+            : '') + '</div>'
+        : '') +
       '<div class="panel-section"><h3>关键节点</h3><ul class="fact-list">' + facts + '</ul></div>' +
       (event.note ? '<p class="panel-note">' + escapeHtml(event.note) + '</p>' : '') +
       '<div class="panel-section"><h3>延伸阅读</h3><ul class="source-list">' + sources + '</ul></div>' +
