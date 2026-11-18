@@ -18,9 +18,12 @@
 .war-entry-nav {
   margin-top: 16px;
   pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
 }
 
-.war-entry-nav a + a { margin-left: 16px; }
+.war-entry-nav a + a { margin-left: 0; }
 
 .war-entry-nav a {
   display: inline-block;

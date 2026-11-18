@@ -351,6 +351,35 @@ button { font: inherit; color: inherit; }
   border-color: var(--cyan);
 }
 
+.pwa-install {
+  position: fixed;
+  left: 14px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 40;
+  padding: 11px 16px;
+  border: 1px solid rgba(34, 211, 238, 0.55);
+  background: rgba(8, 16, 26, 0.92);
+  color: #a5f3fc;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45), 0 0 22px rgba(34, 211, 238, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.pwa-install:hover {
+  border-color: var(--cyan);
+  color: #ecfeff;
+}
+
+button,
+a,
+input {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .legend {
   position: absolute;
   top: 38px;
@@ -1038,11 +1067,16 @@ button { font: inherit; color: inherit; }
   .track-playhead { top: 18px; }
   .axis-tick { top: 32px; }
   .timeline-foot { display: none; }
+  .pwa-install { bottom: calc(214px + env(safe-area-inset-bottom)); }
 }
 
 @media (max-width: 520px) {
   .masthead h1 { font-size: 22px; letter-spacing: 0.06em; }
   .masthead h1 em { display: block; margin: 6px 0 0; font-size: 12px; }
+  .masthead { max-width: calc(100vw - 36px); }
+  .war-entry-link { display: block; width: max-content; max-width: 100%; margin-top: 8px; }
+  .war-entry-link + .war-entry-link { margin-top: 5px; }
+  .research-entry-link { margin-left: 0; }
   .panel { max-height: 50vh; }
   .track-event:nth-child(even) { top: 4px; }
 }
