@@ -27,6 +27,7 @@ const atlas = loadWindow('data/borders.js').ATLAS;
 const core = loadWindow('data/events.js').HISTORY_EVENTS;
 const meta = loadWindow('data/events-meta.js').CORE_EVENT_META;
 const extra = loadWindow('data/events-extra.js').HISTORY_EVENTS_EXTRA;
+const wars = loadWindow('data/wars.js').HISTORY_WARS;
 const events = core.concat(extra);
 
 events.forEach((event) => {
@@ -45,11 +46,15 @@ assert(years.every((y, i) => i === 0 || years[i - 1] < y), '快照年份未升�
 
 const requiredFiles = [
   'index.html',
+  'wars.html',
   'css/style.css',
+  'css/wars.css',
   'js/app.js',
+  'js/wars.js',
   'data/events.js',
   'data/events-meta.js',
   'data/events-extra.js',
+  'data/wars.js',
   'vendor/d3.min.js',
   'vendor/topojson-client.min.js',
 ];
@@ -63,6 +68,15 @@ for (const id of ['map', 'eras', 'markers', 'panel', 'panelScroll', 'track', 'tr
 }
 for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/events.js', 'data/events-meta.js', 'data/events-extra.js', 'js/app.js']) {
   assert(html.includes('src="' + src + '"'), 'index.html 未引用 ' + src);
+}
+assert(html.includes('href="wars.html"'), 'index.html 未链接战争线页面');
+
+const warHtml = fs.readFileSync(path.join(root, 'wars.html'), 'utf8');
+for (const id of ['map', 'eras', 'sideLabels', 'battles', 'warPanel', 'warTimeline', 'warTrack', 'warAxis', 'warLanes']) {
+  assert(warHtml.includes('id="' + id + '"'), 'wars.html 缺少 #' + id);
+}
+for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/wars.js', 'js/wars.js']) {
+  assert(warHtml.includes('src="' + src + '"'), 'wars.html 未引用 ' + src);
 }
 
 const ids = new Set();
@@ -114,6 +128,41 @@ for (const category of ['政治', '经济', '文化', '社会']) {
   assert(events.some((event) => event.category === category), '缺少“' + category + '”类事件');
 }
 
+assert(Array.isArray(wars) && wars.length >= 12, '战争线少于 12 场战争');
+const warIds = new Set();
+for (const war of wars) {
+  const prefix = '战争 ' + (war.name || '(无名称)');
+  assert(war.id && !warIds.has(war.id), prefix + '：id 缺失或重复');
+  warIds.add(war.id);
+  assert(war.name && war.name.length >= 2, prefix + '：名称无效');
+  assert(Number.isFinite(war.start) && Number.isFinite(war.end), prefix + '：起止年份无效');
+  assert(war.end >= war.start, prefix + '：结束年份早于开始年份');
+  assert(war.start >= 1490 && war.end <= 1905, prefix + '：超出战争线时间范围');
+  assert(years.includes(war.snapshot), prefix + '：snapshot 不在边界快照中');
+  assert(war.sides && war.sides.a && war.sides.b, prefix + '：缺少交战双方');
+  for (const key of ['a', 'b']) {
+    const side = war.sides && war.sides[key];
+    assert(side && side.label, prefix + '：缺少交战方 ' + key + ' 标签');
+    assert(Array.isArray(side.polities) && side.polities.length >= 1, prefix + '：交战方 ' + key + ' 没有政权');
+    for (const polity of side.polities || []) {
+      assert(polity.name && polity.label, prefix + '：交战方 ' + key + ' 的政权条目无效');
+    }
+  }
+  assert(war.summary && war.summary.length >= 40, prefix + '：summary 少于 40 字');
+  assert(Array.isArray(war.battles) && war.battles.length >= 1, prefix + '：缺少战役');
+  for (const battle of war.battles || []) {
+    assert(battle.name && Number.isFinite(battle.year), prefix + '：战役条目无效');
+    assert(Number.isFinite(battle.lon) && battle.lon >= -30 && battle.lon <= 55, prefix + '：战役经度越界');
+    assert(Number.isFinite(battle.lat) && battle.lat >= 30 && battle.lat <= 75, prefix + '：战役纬度越界');
+  }
+  assert(war.outcome && war.outcome.length >= 8, prefix + '：缺少战争结果');
+  assert(Array.isArray(war.sources) && war.sources.length >= 1, prefix + '：缺少史料出处');
+  for (const source of war.sources || []) {
+    assert(source.label, prefix + '：出处缺少 label');
+    if (source.url) assert(source.url.startsWith('https://'), prefix + '：出处链接必须以 https:// 开头');
+  }
+}
+
 for (const year of years) {
   const features = atlas.borders[year] || [];
   assert(features.length >= 15, year + ' 年政权多边形少于 15 个');
@@ -138,5 +187,6 @@ console.log(' - years: ' + years.join(', '));
 console.log(' - events: ' + events.length + ' (core ' + events.filter((e) => e.tier === 'core').length +
   ', extra ' + events.filter((e) => e.tier === 'extra').length + ')');
 console.log(' - categories: ' + Object.keys(counts).map((k) => k + ':' + counts[k]).join(' '));
+console.log(' - wars: ' + wars.length + ' (' + wars.map((w) => w.id).join(', ') + ')');
 console.log(' - features: ' + years.map((y) => y + ':' + atlas.borders[y].length).join(' '));
 for (const warning of warnings) console.warn(' ! ' + warning);

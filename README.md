@@ -2,12 +2,14 @@
 
 一个面向历史教学与自主学习的交互式历史地图：以 1500–1900 年间七个政权边界快照为骨架，串联 **30 个关键事件**（12 条核心 + 18 条扩展），覆盖政治、经济、文化与社会，把「地图上的空间变化」与「时间轴上的因果链」放在同一屏里。
 
-**在线地址：<https://csgpjy.github.io/europe-history-atlas/>**
+**在线地址：<https://csgpjy.github.io/europe-history-atlas/>**  
+**战争线：<https://csgpjy.github.io/europe-history-atlas/wars.html>**
 
 ## 特点
 
 - **历史地图 × 时间轴**：拖动 1490–1905 年时间轴，地图在 1500 / 1600 / 1700 / 1715 / 1783 / 1815 / 1900 七个边界快照间淡入切换。
 - **四类事件与两级深度**：政治、经济、文化、社会四类筛选；默认展示 12 条核心事件，可展开 18 条扩展事件，避免时间轴拥挤。
+- **独立战争线**：`wars.html` 单列 1494–1878 年 14 场国家间战争，紫、金两色区分交战双方，附关键战役、结果与教材章节。
 - **事件驱动的高亮**：点击事件菱形或地图脉冲标记，相关政权以紫色高亮；核心政权（如西班牙哈布斯堡）与参战方分两级呈现。
 - **深色沉浸式视觉**：藏蓝底 `#0a0e17`、羊皮纸噪点、暗角、青色发光国界 `#22d3ee`、紫色事件区 `#a855f7`、细金线玻璃拟态知识面板。
 - **零依赖运行**：D3 与历史边界均已本地化，`file://` 直接打开也能用；无框架、无构建步骤（CI 仅负责生成数据）。
@@ -50,15 +52,20 @@ node tools/build_borders.js  # 裁剪、简化、预投影 → data/borders.js
 ## 目录
 
 ```
-index.html              页面骨架与 SVG 地图
+index.html              时代全景：地图、时间轴、分类筛选、知识面板
+wars.html               战争线：14 场国家间战争、双方阵营与战役
 css/style.css           视觉系统（设计令牌、玻璃拟态、时间轴）
-js/app.js               投影、时间轴、事件联动、面板渲染
+css/wars.css            战争线专属样式
+js/app.js               主页面交互
+js/wars.js              战争线交互（双方高亮、战争带）
 data/events.js          12 条核心事件：年代、摘要、关键节点、出处、高亮选择器
 data/events-extra.js    18 条扩展事件：政治 / 经济 / 文化 / 社会，附教材章节
 data/events-meta.js     核心事件的分类元数据
+data/wars.js            14 场战争：双方阵营、战役、结果、教材出处
 data/borders.js         生成物：七个年份的预投影 SVG 路径
 tools/fetch_assets.js   下载原始边界与 D3
 tools/build_borders.js  裁剪 / 简化 / 投影 / 生成标签质心
+tools/validate.js       事件、战争与构建产物校验
 .github/workflows/pages.yml
 ```
 
