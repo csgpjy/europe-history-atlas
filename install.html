@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e17" />
+  <meta name="description" content="EUROPA 手机安装帮助：Edge 无法安装 PWA 时，用“添加到主屏幕”兜底。" />
+  <title>手机安装帮助 · EUROPA</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/install.css" />
+</head>
+<body class="install-body">
+  <main class="install-app">
+    <header class="install-head">
+      <span class="brand-eyebrow">Atlas Historicus · Mobile</span>
+      <h1>安装到手机</h1>
+      <p class="install-sub">Edge 提示“无法安装”时，用主屏快捷方式也能完整使用。</p>
+      <nav class="install-nav">
+        <a href="index.html">← 返回主站</a>
+        <a href="wars.html">战争线</a>
+      </nav>
+    </header>
+
+    <section class="install-hero">
+      <div class="install-hero-copy">
+        <span class="install-kicker" id="deviceHint">检测中…</span>
+        <h2>装不上应用，不耽误用</h2>
+        <p>
+          主站支持 Edge 的“安装为应用”；如果 Edge 没有这个选项，或提示“无法安装此应用”，
+         先用 <strong>“添加到主屏幕 / 添加到手机”</strong> 创建快捷方式。
+          打开后仍是完整站点，地图、战争线和研究模式都能用。
+        </p>
+        <div class="install-actions">
+          <a class="install-btn primary" href="index.html">打开主站</a>
+          <button class="install-btn" id="copyUrl" type="button">复制网址</button>
+          <a class="install-btn" href="wars.html">直达战争线</a>
+        </div>
+        <p class="install-copy-status" id="copyStatus" aria-live="polite"></p>
+      </div>
+      <div class="install-badge" aria-hidden="true">
+        <div class="badge-frame"><span>EUROPA</span><b>1500—1900</b></div>
+        <small>添加到主屏后的名称</small>
+      </div>
+    </section>
+
+    <section class="install-steps">
+      <article class="install-step" data-platform="android">
+        <div class="step-num">01</div>
+        <h3>Edge Android</h3>
+        <ol>
+          <li>用 Edge 打开 <b>csgpjy.github.io/europe-history-atlas/</b></li>
+          <li>点右上角菜单 <b>…</b></li>
+          <li>选 <b>“添加到手机”</b> 或 <b>“添加到主屏幕”</b></li>
+        </ol>
+        <p>如果菜单里有“安装应用”，优先用它；没有就用上面的快捷方式。</p>
+      </article>
+
+      <article class="install-step" data-platform="desktop">
+        <div class="step-num">02</div>
+        <h3>Edge 桌面</h3>
+        <ol>
+          <li>点右上角 <b>…</b></li>
+          <li>进入 <b>应用</b></li>
+          <li>选 <b>“将此站点安装为应用”</b></li>
+        </ol>
+        <p>如果该选项变灰，打开一个普通 Edge 窗口（不要用工作/学校配置文件）再试。</p>
+      </article>
+
+      <article class="install-step" data-platform="ios">
+        <div class="step-num">03</div>
+        <h3>iPhone / iPad</h3>
+        <ol>
+          <li>用 <b>Safari</b> 打开同一网址</li>
+          <li>点底部分享按钮</li>
+          <li>选 <b>“添加到主屏幕”</b></li>
+        </ol>
+        <p>iOS 的 Edge 不能安装 Web App；浏览可继续用 Edge，安装请用 Safari。</p>
+      </article>
+    </section>
+
+    <section class="install-faq">
+      <h2>为什么提示“无法安装此应用”？</h2>
+      <ul>
+        <li><b>从 ZIP 或本地文件打开</b>：PWA 安装要求 HTTPS 在线地址；下载的 ZIP 只能离线浏览，不能安装。请使用上面的 GitHub Pages 网址。</li>
+        <li><b>手机没有 Google Play 服务</b>：部分 Android 设备无法生成 WebAPK，此时用 Edge 菜单里的“添加到主屏幕”即可。</li>
+        <li><b>工作/学校 Edge 配置</b>：组织策略可能禁用应用安装；换个人配置文件，或用“添加到主屏幕”。</li>
+        <li><b>iPhone 上的 Edge</b>：iOS 只允许 Safari 添加到主屏幕；这是系统限制，不是站点问题。</li>
+        <li><b>页面刚打开就安装</b>：等 3–5 秒让 Service Worker 完成注册，再刷新重试。</li>
+      </ul>
+    </section>
+
+    <footer class="install-foot">
+      <span>安装后主站、战争线可离线打开；研究模式首次需联网。</span>
+      <a href="index.html">开始使用 →</a>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      var ua = navigator.userAgent;
+      var hint = document.getElementById('deviceHint');
+      var platform = 'desktop';
+      if (/iPhone|iPad|iPod/i.test(ua)) platform = 'ios';
+      else if (/Android/i.test(ua)) platform = 'android';
+      hint.textContent = platform === 'ios' ? '检测到 iPhone / iPad'
+        : platform === 'android' ? '检测到 Android'
+        : '检测到桌面浏览器';
+      document.querySelectorAll('.install-step').forEach(function (step) {
+        step.classList.toggle('is-current', step.getAttribute('data-platform') === platform);
+      });
+
+      var button = document.getElementById('copyUrl');
+      var status = document.getElementById('copyStatus');
+      button.addEventListener('click', function () {
+        var url = 'https://csgpjy.github.io/europe-history-atlas/';
+        var done = function () { status.textContent = '网址已复制，粘贴到 Edge 地址栏即可。'; };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done).catch(function () {
+            status.textContent = url;
+          });
+        } else {
+          status.textContent = url;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

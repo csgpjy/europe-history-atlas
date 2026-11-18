@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="欧洲战争线：1494–1878 年各国之间的 14 场战争，交战双方、各国影响、条约、关键战役与教材出处。" />
+  <meta name="theme-color" content="#0a0e17" />
+  <meta name="application-name" content="EUROPA" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="EUROPA" />
+  <title>WARS 1494–1878 · 欧洲战争线</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/wars.css" />
+</head>
+<body class="war-body">
+  <div class="app war-app">
+    <div class="map-stage war-map-stage">
+      <svg id="map" viewBox="0 0 1000 820" preserveAspectRatio="xMidYMid meet" role="img" aria-label="欧洲战争双方阵营地图">
+        <defs>
+          <radialGradient id="oceanGradient" cx="50%" cy="44%" r="72%">
+            <stop offset="0%" stop-color="#101a2b" />
+            <stop offset="58%" stop-color="#0a101c" />
+            <stop offset="100%" stop-color="#05080e" />
+          </radialGradient>
+          <filter id="glowViolet" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <filter id="glowAmber" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <rect class="ocean" x="0" y="0" width="1000" height="820" />
+        <g id="eras"></g>
+        <path id="rivers" class="rivers" />
+        <path id="lakes" class="lakes" />
+        <g id="cities"></g>
+        <g id="sideLabels"></g>
+        <g id="battles"></g>
+        <g id="treaties"></g>
+      </svg>
+      <div class="map-grain" aria-hidden="true"></div>
+      <div class="map-vignette" aria-hidden="true"></div>
+      <div class="map-frame" aria-hidden="true"></div>
+    </div>
+
+    <header class="masthead war-masthead">
+      <span class="brand-eyebrow">Atlas Historicus · 战争线</span>
+      <h1>WARS <em>1494—1878</em></h1>
+      <p class="brand-sub">欧洲列强之间的战争 · 交战双方与关键战役</p>
+      <nav class="war-entry-nav">
+        <a href="index.html">← 返回时代全景</a>
+        <a href="research.html">研究模式 · OHM / Cliopatria</a>
+        <a href="install.html">手机安装</a>
+      </nav>
+    </header>
+
+    <div class="war-legend">
+      <span><i class="swatch side-a"></i><b id="legendA">交战方 A</b></span>
+      <span><i class="swatch side-b"></i><b id="legendB">交战方 B</b></span>
+    </div>
+
+    <aside class="panel war-panel" id="warPanel" aria-label="战争知识面板">
+      <button class="panel-close" id="warClose" aria-label="关闭战争面板">×</button>
+      <div class="panel-scroll" id="warPanelScroll"></div>
+    </aside>
+
+    <div class="war-impact" id="warImpact" hidden aria-live="polite">
+      <button class="war-impact-close" id="warImpactClose" type="button" aria-label="关闭国家影响">×</button>
+      <div class="war-impact-kicker" id="warImpactSide">交战方影响</div>
+      <h3 id="warImpactName">国家</h3>
+      <p id="warImpactText"></p>
+      <p class="war-impact-source" id="warImpactSource"></p>
+    </div>
+
+    <section class="war-timeline" id="warTimeline" aria-label="战争时间轴">
+      <div class="war-timeline-head">
+        <div class="war-readout"><span id="warYear">1701</span><small>年</small></div>
+        <div class="war-current">
+          <b id="warName">西班牙王位继承战争</b>
+          <span id="warRange">1701—1714</span>
+        </div>
+        <div class="war-count"><b id="warCount">14</b> 场国家间战争</div>
+      </div>
+      <div class="war-track" id="warTrack">
+        <div class="war-axis" id="warAxis"></div>
+        <div class="war-lanes" id="warLanes"></div>
+        <div class="war-playhead" id="warPlayhead"></div>
+      </div>
+      <div class="war-timeline-foot">
+        <span>点击色条查看战争 · 色条长度 = 战争持续时间</span>
+        <span>教材：吴于廑、齐世荣主编《世界史·近代史编》上/下卷</span>
+      </div>
+    </section>
+
+    <div class="tooltip" id="warTooltip" role="tooltip"></div>
+  </div>
+
+  <script src="vendor/d3.min.js"></script>
+  <script src="data/borders.js"></script>
+  <script src="data/wars.js"></script>
+  <script src="data/war-details.js"></script>
+  <script src="js/wars.js"></script>
+  <script src="js/pwa.js" defer></script>
+</body>
+</html>

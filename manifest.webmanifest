@@ -1,0 +1,42 @@
+{
+  "name": "EUROPA 1500–1900 · 欧洲近代早期史",
+  "short_name": "EUROPA",
+  "description": "欧洲近代早期史交互地图：十个历史切面、30 个事件、14 场国家间战争与研究模式。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0e17",
+  "theme_color": "#0a0e17",
+  "categories": ["education", "history", "books"],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "战争线 1494–1878",
+      "short_name": "战争线",
+      "description": "14 场国家间战争与阶段",
+      "url": "./#wars",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

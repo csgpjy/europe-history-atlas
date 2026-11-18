@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0a0e17"/>
+  <circle cx="256" cy="256" r="218" fill="none" stroke="#22d3ee" stroke-width="7"/>
+  <circle cx="256" cy="256" r="178" fill="none" stroke="#c9a961" stroke-width="2"/>
+  <circle cx="256" cy="256" r="222" fill="none" stroke="#67e8f9" stroke-width="1" opacity=".5"/>
+  <text x="256" y="342" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="248" fill="#e8d5a3">E</text>
+  <text x="256" y="398" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" letter-spacing="4" fill="#22d3ee">EUROPA</text>
+  <text x="256" y="430" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="2" fill="#c9a961">1500 — 1900</text>
+</svg>

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="研究模式：自托管 MapLibre 历史边界原型、OpenHistoricalMap 外部对照与 Cliopatria 数据说明。" />
+  <meta name="theme-color" content="#0a0e17" />
+  <meta name="application-name" content="EUROPA" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="EUROPA" />
+  <title>RESEARCH MODE · MapLibre / OHM / Cliopatria</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/research.css" />
+</head>
+<body class="research-body">
+  <div class="research-app">
+    <header class="research-head">
+      <span class="brand-eyebrow">Atlas Historicus · Method Lab</span>
+      <h1>RESEARCH <em>MODE</em></h1>
+      <p class="brand-sub">自托管 MapLibre · OHM 对照 · Cliopatria 数据 · 默认不加载外部服务</p>
+      <nav class="research-nav">
+        <a href="index.html">← 时代全景</a>
+        <a href="wars.html">战争线</a>
+        <a href="install.html">手机安装</a>
+      </nav>
+    </header>
+
+    <main class="research-grid">
+      <section>
+        <section class="research-card">
+          <div class="card-kicker">01 · MapLibre · Self-hosted</div>
+          <h2>自托管矢量地图，本地加载</h2>
+          <p class="research-copy">
+            用本地 GeoJSON 快照驱动 MapLibre GL JS：可缩放、平移，按快照切换边界。
+            MapLibre（约 917KB）与数据仅在点击后加载，主站默认仍使用轻量 SVG。
+          </p>
+
+          <div class="research-controls">
+            <label for="mapYear">快照 <output id="mapYearOut">1700</output></label>
+            <input id="mapYear" type="range" min="0" max="9" step="1" value="3" />
+            <div class="research-buttons">
+              <button id="mapLoad" type="button" class="research-btn primary">加载自托管图层</button>
+              <button id="mapUnload" type="button" class="research-btn">卸载</button>
+            </div>
+          </div>
+
+          <div class="research-map-wrap">
+            <div id="researchMap"></div>
+            <div class="map-placeholder" id="mapPlaceholder">
+              默认不加载 MapLibre。<br />
+              点击“加载自托管图层”后，才会请求本地 917KB 脚本与当前快照。
+            </div>
+          </div>
+          <p class="research-status" id="mapStatus">状态：未加载</p>
+          <p class="research-note">
+            当前快照数据为 historical-basemaps（GPL-3.0），单年约 60–86KB；
+            PMTiles 单文件切片是下一阶段，目标是把 10 年数据合并为按需范围请求的静态瓦片包。
+          </p>
+        </section>
+
+        <section class="research-card">
+          <div class="card-kicker">02 · OpenHistoricalMap</div>
+          <h2>外部实时图层对照</h2>
+          <p class="research-copy">
+            OHM 用带 <code>start_date</code> / <code>end_date</code> 的矢量要素描述历史地理。
+            下方用官方 embed 做外部对照：只有点击后才请求 OHM 域名，且受网络可达性影响。
+          </p>
+
+          <div class="research-controls">
+            <label for="researchYear">年份 <output id="researchYearOut">1700</output></label>
+            <input id="researchYear" type="range" min="1490" max="1905" step="1" value="1700" />
+            <div class="research-buttons">
+              <button id="ohmLoad" type="button" class="research-btn">加载 OHM 嵌入</button>
+              <button id="ohmUnload" type="button" class="research-btn">卸载</button>
+              <a id="ohmOpen" class="research-btn link" href="https://embed.openhistoricalmap.org/" target="_blank" rel="noopener noreferrer">新窗口打开</a>
+            </div>
+          </div>
+
+          <div class="ohm-frame-wrap" id="ohmFrameWrap">
+            <div class="ohm-placeholder" id="ohmPlaceholder">
+              默认不加载外部地图服务。<br />
+              点击“加载 OHM 嵌入”后，才会创建 iframe。
+            </div>
+          </div>
+          <p class="research-status" id="ohmStatus">状态：未加载</p>
+          <p class="research-note">
+            OHM 数据以 CC0 / 公有领域发布。iframe 只用于可达性与对照，不作为主站依赖；
+            生产版建议 MapLibre + <code>maplibre-gl-dates</code> + 自托管 PMTiles。
+          </p>
+        </section>
+      </section>
+
+      <aside class="research-aside">
+        <section class="research-card">
+          <div class="card-kicker">03 · Cliopatria</div>
+          <h2>逐年政治实体数据</h2>
+          <p class="research-copy">
+            Seshat 的 Cliopatria 以年份区间记录全球政治实体的多边形，适合做“逐年边界”而不是十张快照。
+            数据由扫描历史地图集机器生成，作者明确提醒边界存在不确定性与版本差异。
+          </p>
+          <ul class="research-facts">
+            <li><b>1600+</b> 个政治实体</li>
+            <li><b>3400 BCE–2024</b> 年覆盖</li>
+            <li><b>CC BY 4.0</b> 数据许可</li>
+            <li><b>待审校</b> 1000–2024 年部分仍在复核</li>
+          </ul>
+          <div class="research-links">
+            <a href="https://github.com/Seshat-Global-History-Databank/cliopatria" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            <a href="https://zenodo.org/records/13363121" target="_blank" rel="noopener noreferrer">Zenodo ↗</a>
+            <a href="https://www.nature.com/articles/s41597-025-04516-9" target="_blank" rel="noopener noreferrer">论文 ↗</a>
+          </div>
+        </section>
+
+        <section class="research-card">
+          <div class="card-kicker">04 · 取舍</div>
+          <h2>默认 SVG，研究模式按需</h2>
+          <ul class="research-list">
+            <li><b>默认</b>：现有 SVG 快照，首屏快、离线可用，适合课堂展示。</li>
+            <li><b>研究</b>：MapLibre 自托管图层，可缩放；OHM 仅作外部对照。</li>
+            <li><b>下一步</b>：PMTiles 单文件切片 + MapLibre 日期过滤，替代逐年 GeoJSON。</li>
+            <li><b>授权</b>：historical-basemaps GPL-3.0；OHM CC0；Cliopatria CC BY 4.0；Natural Earth 公有领域。</li>
+          </ul>
+          <p class="research-note">
+            两个加载按钮都默认关闭：未点击前，不产生 MapLibre、OHM 或数据请求。
+          </p>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="research-foot">
+      <span>实验原型 · 数据与授权说明见仓库 DATA-LICENSE.md</span>
+      <span>MapLibre GL JS · historical-basemaps · OHM embed · Cliopatria</span>
+    </footer>
+  </div>
+
+  <script src="js/research.js"></script>
+  <script src="js/pwa.js" defer></script>
+</body>
+</html>

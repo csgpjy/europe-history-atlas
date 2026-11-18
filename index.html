@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="欧洲近代早期史交互地图：1500–1900 年十个历史切面、30 个政治经济文化社会事件，从意大利战争到第二次工业革命。" />
+  <meta name="theme-color" content="#0a0e17" />
+  <meta name="application-name" content="EUROPA" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="EUROPA" />
+  <title>EUROPA 1500–1900 · 近代早期欧洲交互史</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32.png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="map-stage" id="mapStage">
+      <svg id="map" viewBox="0 0 1000 820" preserveAspectRatio="xMidYMid meet" role="img" aria-label="1500 至 1900 年欧洲历史政权边界地图">
+        <defs>
+          <radialGradient id="oceanGradient" cx="50%" cy="44%" r="72%">
+            <stop offset="0%" stop-color="#101a2b" />
+            <stop offset="58%" stop-color="#0a101c" />
+            <stop offset="100%" stop-color="#05080e" />
+          </radialGradient>
+
+          <filter id="glowViolet" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.4" result="blur" />
+            <feColorMatrix in="blur" type="matrix"
+              values="0.55 0 0 0 0.36  0 0.2 0 0 0.12  0 0 0.8 0 0.55  0 0 0 0.9 0" result="tint" />
+            <feMerge>
+              <feMergeNode in="tint" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <filter id="glowCyan" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur" />
+            <feColorMatrix in="blur" type="matrix"
+              values="0 0.6 0 0 0.02  0 0.75 0.1 0 0.06  0 0.2 0.8 0 0.1  0 0 0 0.85 0" result="tint" />
+            <feMerge>
+              <feMergeNode in="tint" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <rect class="ocean" x="0" y="0" width="1000" height="820" />
+        <path id="graticule" class="graticule" />
+        <path id="land" class="land" filter="url(#glowCyan)" />
+        <g id="eras"></g>
+        <path id="rivers" class="rivers" />
+        <path id="lakes" class="lakes" />
+        <g id="cities"></g>
+        <g id="markers"></g>
+      </svg>
+
+      <div class="map-grain" aria-hidden="true"></div>
+      <div class="map-vignette" aria-hidden="true"></div>
+      <div class="map-frame" aria-hidden="true"></div>
+    </div>
+
+    <header class="masthead">
+      <span class="brand-eyebrow">Atlas Historicus · 近代早期</span>
+      <h1>EUROPA <em>1500—1900</em></h1>
+      <p class="brand-sub">帝国、王朝与民族国家的四百年</p>
+      <a class="war-entry-link" id="warLineLink" href="wars.html" aria-haspopup="dialog">战争线 · 14 场国家间战争 →</a>
+      <a class="war-entry-link research-entry-link" href="research.html">研究模式 · OHM / Cliopatria →</a>
+      <a class="war-entry-link install-entry-link" href="install.html">手机安装</a>
+    </header>
+
+    <div class="legend" aria-hidden="true">
+      <span><i></i>历史政权边界</span>
+      <span><i class="violet"></i>历史事件区域</span>
+    </div>
+
+    <aside class="panel" id="panel" aria-label="历史知识面板">
+      <button class="panel-close" id="panelClose" aria-label="关闭知识面板">×</button>
+      <div class="panel-scroll" id="panelScroll"></div>
+    </aside>
+
+    <section class="timeline" id="timeline" aria-label="时间轴">
+      <div class="timeline-head">
+        <button class="play" id="playBtn" aria-label="播放 1500 至 1900 年历史演进">▶</button>
+        <div class="year-readout">
+          <span id="yearNow">1700</span>
+          <small>年</small>
+        </div>
+        <div class="snapshot-chips" id="snapshotChips" aria-label="边界快照年份"></div>
+      </div>
+
+      <div class="filters" id="filters">
+        <div class="filter-group" id="categoryFilters" role="group" aria-label="按类别筛选事件">
+          <button class="filter is-on" type="button" data-cat="all">全部</button>
+          <button class="filter" type="button" data-cat="政治">政治</button>
+          <button class="filter" type="button" data-cat="经济">经济</button>
+          <button class="filter" type="button" data-cat="文化">文化</button>
+          <button class="filter" type="button" data-cat="社会">社会</button>
+        </div>
+        <button class="filter filter-extra" type="button" id="extraToggle" aria-pressed="false">
+          扩展事件 <span id="extraCount">18</span>
+        </button>
+      </div>
+
+      <div class="track" id="track" role="slider" tabindex="0"
+           aria-label="年份滑块" aria-valuemin="1490" aria-valuemax="1905" aria-valuenow="1700">
+        <div class="track-events" id="trackEvents"></div>
+        <div class="track-progress" id="trackProgress"></div>
+        <div class="track-playhead" id="trackPlayhead"></div>
+      </div>
+
+      <div class="timeline-foot">
+        <span id="snapshotLabel">边界快照 1700</span>
+        <span class="hint">拖动时间轴 · 点击紫色菱形查看事件</span>
+      </div>
+    </section>
+
+    <div class="tooltip" id="tooltip" role="tooltip"></div>
+  </div>
+
+  <div class="war-overlay" id="warOverlay" hidden aria-hidden="true">
+    <div class="war-overlay-bar">
+      <div class="war-overlay-title">战争线 <b>1494—1878</b></div>
+      <a class="war-overlay-open" href="wars.html" target="_blank" rel="noopener noreferrer">新窗口打开 ↗</a>
+      <button class="war-overlay-close" id="warOverlayClose" type="button" aria-label="关闭战争线">关闭 ×</button>
+    </div>
+    <div class="war-overlay-body" id="warOverlayBody"></div>
+  </div>
+
+  <script src="vendor/d3.min.js"></script>
+  <script src="data/borders.js"></script>
+  <script src="data/events.js"></script>
+  <script src="data/events-meta.js"></script>
+  <script src="data/events-extra.js"></script>
+  <script src="data/event-significance.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js" defer></script>
+</body>
+</html>
