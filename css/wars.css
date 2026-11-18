@@ -20,6 +20,8 @@
   pointer-events: auto;
 }
 
+.war-entry-nav a + a { margin-left: 16px; }
+
 .war-entry-nav a {
   display: inline-block;
   color: var(--gold);
@@ -284,6 +286,43 @@
 
 /* 面板内容 */
 .war-side-row { display: flex; gap: 10px; margin: 18px 0 20px; }
+
+.war-phase-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 2px 0 14px;
+}
+
+.war-phase {
+  padding: 5px 8px;
+  border: 1px solid rgba(201, 169, 97, 0.22);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ink-mute);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.war-phase span {
+  display: block;
+  margin-top: 2px;
+  font-size: 8.5px;
+  color: rgba(167, 173, 189, 0.72);
+}
+
+.war-phase:hover { border-color: rgba(251, 191, 36, 0.55); color: var(--ink); }
+
+.war-phase.is-on {
+  border-color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.16);
+}
+
+.war-phase.is-on span { color: rgba(253, 230, 138, 0.8); }
 
 .war-side-chip {
   flex: 1;
