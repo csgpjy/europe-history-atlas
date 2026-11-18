@@ -220,6 +220,7 @@
   var warImpactSide = document.getElementById('warImpactSide');
   var warImpactName = document.getElementById('warImpactName');
   var warImpactText = document.getElementById('warImpactText');
+  var warImpactSource = document.getElementById('warImpactSource');
   var warImpactClose = document.getElementById('warImpactClose');
 
   function hideCountryImpact() {
@@ -280,6 +281,10 @@
     warImpactSide.className = 'war-impact-kicker side-' + info.side;
     warImpactName.textContent = countryLabel(war, name);
     warImpactText.textContent = info.text;
+    if (warImpactSource) {
+      var source = textbookSource(war);
+      warImpactSource.textContent = source ? '教材依据：' + source : '';
+    }
     warImpact.hidden = false;
     warImpact.classList.add('is-open');
     if (window.matchMedia('(max-width: 940px)').matches) {
