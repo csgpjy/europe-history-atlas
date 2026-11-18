@@ -38,10 +38,10 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/css _site/js _site/data _site/vendor
-          cp index.html _site/
-          cp css/style.css _site/css/
-          cp js/app.js _site/js/
-          cp data/events.js data/events-meta.js data/events-extra.js data/borders.js _site/data/
+          cp index.html wars.html _site/
+          cp css/style.css css/wars.css _site/css/
+          cp js/app.js js/wars.js _site/js/
+          cp data/events.js data/events-meta.js data/events-extra.js data/wars.js data/borders.js _site/data/
           cp vendor/d3.min.js vendor/topojson-client.min.js _site/vendor/
           touch _site/.nojekyll
 
