@@ -67,7 +67,7 @@
       <span class="brand-eyebrow">Atlas Historicus · 近代早期</span>
       <h1>EUROPA <em>1500—1900</em></h1>
       <p class="brand-sub">帝国、王朝与民族国家的四百年</p>
-      <a class="war-entry-link" href="wars.html">战争线 · 14 场国家间战争 →</a>
+      <a class="war-entry-link" id="warLineLink" href="wars.html" aria-haspopup="dialog">战争线 · 14 场国家间战争 →</a>
       <a class="war-entry-link research-entry-link" href="research.html">研究模式 · OHM / Cliopatria →</a>
     </header>
 
@@ -118,6 +118,15 @@
     </section>
 
     <div class="tooltip" id="tooltip" role="tooltip"></div>
+  </div>
+
+  <div class="war-overlay" id="warOverlay" hidden aria-hidden="true">
+    <div class="war-overlay-bar">
+      <div class="war-overlay-title">战争线 <b>1494—1878</b></div>
+      <a class="war-overlay-open" href="wars.html" target="_blank" rel="noopener noreferrer">新窗口打开 ↗</a>
+      <button class="war-overlay-close" id="warOverlayClose" type="button" aria-label="关闭战争线">关闭 ×</button>
+    </div>
+    <div class="war-overlay-body" id="warOverlayBody"></div>
   </div>
 
   <script src="vendor/d3.min.js"></script>

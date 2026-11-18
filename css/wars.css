@@ -15,6 +15,10 @@
   text-shadow: 0 0 22px rgba(245, 158, 11, 0.45);
 }
 
+/* 主站内嵌模式：父级顶栏已提供标题与关闭 */
+.war-body.is-embedded .war-masthead { display: none; }
+.war-body.is-embedded .pwa-install { display: none; }
+
 .war-entry-nav {
   margin-top: 16px;
   pointer-events: auto;

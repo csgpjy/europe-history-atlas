@@ -373,11 +373,189 @@ button { font: inherit; color: inherit; }
   color: #ecfeff;
 }
 
+body.war-view-open .pwa-install { display: none; }
+
+@media (min-width: 941px) {
+  .pwa-install { display: none; }
+}
+
+/* 主站内的战争线视图 */
+.war-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  background: #05070c;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.24s ease, visibility 0.24s ease;
+}
+
+.war-overlay[hidden] { display: none; }
+.war-overlay.is-open { opacity: 1; visibility: visible; }
+
+.war-overlay-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(201, 169, 97, 0.25);
+  background: rgba(7, 10, 17, 0.98);
+}
+
+.war-overlay-title {
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+}
+
+.war-overlay-title b {
+  margin-left: 8px;
+  color: var(--ink-dim);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.war-overlay-open {
+  margin-left: auto;
+  color: var(--cyan);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.war-overlay-open:hover { color: #ecfeff; }
+
+.war-overlay-close {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(201, 169, 97, 0.45);
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.war-overlay-close:hover { border-color: var(--gold); color: #f8f3e7; }
+
+.war-overlay-body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #05070c;
+}
+
+.war-overlay-body iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+body.war-view-open { overflow: hidden; }
+
 button,
 a,
 input {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+.pwa-help {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 6, 12, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.pwa-help-card {
+  position: relative;
+  width: min(440px, 100%);
+  padding: 26px 24px 22px;
+  border: 1px solid rgba(201, 169, 97, 0.42);
+  background: linear-gradient(155deg, #101827, #080d17);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.65), 0 0 40px rgba(34, 211, 238, 0.08);
+}
+
+.pwa-help-kicker {
+  display: block;
+  color: var(--cyan);
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  margin-bottom: 10px;
+}
+
+.pwa-help-card h2 {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 28px;
+}
+
+.pwa-help-card ol {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  color: #c3c7d2;
+  font-size: 12.5px;
+  line-height: 1.9;
+}
+
+.pwa-help-card li + li { margin-top: 8px; }
+.pwa-help-card b { color: var(--gold); font-weight: 500; }
+
+.pwa-help-card p {
+  margin: 0 0 16px;
+  color: var(--ink-mute);
+  font-size: 11.5px;
+  line-height: 1.8;
+}
+
+.pwa-help-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-mute);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.pwa-help-close:hover { color: var(--ink); }
+
+.pwa-help-ok {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.07);
+  color: var(--cyan);
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+}
+
+.pwa-help-ok:hover { border-color: var(--cyan); color: #ecfeff; }
+
+@media (max-width: 520px) {
+  .pwa-help { padding: 12px; }
+  .pwa-help-card { padding: 22px 18px 18px; }
+  .pwa-help-card h2 { font-size: 24px; }
+  .pwa-help-card ol { font-size: 12px; }
 }
 
 .legend {
@@ -1068,6 +1246,11 @@ input {
   .axis-tick { top: 32px; }
   .timeline-foot { display: none; }
   .pwa-install { bottom: calc(214px + env(safe-area-inset-bottom)); }
+  .war-overlay-bar { min-height: 42px; gap: 8px; padding: 0 10px; }
+  .war-overlay-title { font-size: 9px; letter-spacing: 0.14em; }
+  .war-overlay-title b { display: none; }
+  .war-overlay-open { display: none; }
+  .war-overlay-close { margin-left: auto; padding: 0 10px; font-size: 9px; }
 }
 
 @media (max-width: 520px) {
