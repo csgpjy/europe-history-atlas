@@ -26,8 +26,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Decode PWA icons
-        run: node tools/decode_icons.js
+      - name: Generate PWA icons
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 tools/make_pwa_icons.py
 
       - name: Fetch map sources
         run: node tools/fetch_assets.js
