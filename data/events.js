@@ -307,7 +307,7 @@ window.HISTORY_EVENTS = [
     end: 1871,
     kicker: '1861–1871',
     title: '意大利与德意志统一',
-    snapshot: 1900,
+    snapshot: 1880,
     summary:
       '撒丁王国在加富尔与加里波第推动下，借 1859 年对奥战争与 1860 年远征两西西里，于 1861 年建立意大利王国，1870 年收复罗马。普鲁士在俾斯麦主导下历经 1864、1866、1870 三场战争，1871 年在凡尔赛宫镜厅宣告德意志帝国成立，欧洲均势彻底改写。',
     facts: [
@@ -323,7 +323,7 @@ window.HISTORY_EVENTS = [
       { lon: 7.68, lat: 45.07, label: '都灵' },
       { lon: 13.4, lat: 52.52, label: '柏林' },
     ],
-    note: '地图快照：1900 年，统一完成后的民族国家格局。',
+    note: '地图快照：1880 年，统一完成后的民族国家格局。',
     sources: [
       { label: 'Britannica · Unification of Italy', url: 'https://www.britannica.com/event/unification-of-Italy' },
       { label: 'Britannica · German Empire', url: 'https://www.britannica.com/event/German-Empire' },

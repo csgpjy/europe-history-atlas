@@ -62,6 +62,26 @@ window.HISTORY_WARS = [
       a: { label: '反哈布斯堡同盟', polities: [{ name: 'France', label: '法国' }, { name: 'Sweden', label: '瑞典' }, { name: 'Denmark-Norway', label: '丹麦-挪威' }, { name: 'Dutch Republic', label: '荷兰共和国' }, { name: 'Saxony', label: '萨克森' }] },
       b: { label: '哈布斯堡阵营', polities: [{ name: 'Holy Roman Empire', label: '神圣罗马帝国' }, { name: 'Spain', label: '西班牙' }, { name: 'Habsburg Netherlands', label: '哈布斯堡尼德兰' }, { name: 'Bavaria', label: '巴伐利亚' }] },
     },
+    phases: [
+      {
+        from: 1618, to: 1629, label: '波希米亚—丹麦阶段',
+        note: '波希米亚新教贵族起义，丹麦随后介入；哈布斯堡与西班牙、巴伐利亚镇压。',
+        a: { label: '波希米亚—丹麦—新教诸侯', polities: [{ name: 'Denmark-Norway', label: '丹麦-挪威' }, { name: 'Saxony', label: '萨克森' }, { name: 'Dutch Republic', label: '荷兰共和国' }] },
+        b: { label: '哈布斯堡—西班牙—巴伐利亚', polities: [{ name: 'Holy Roman Empire', label: '神圣罗马帝国' }, { name: 'Spain', label: '西班牙' }, { name: 'Bavaria', label: '巴伐利亚' }] },
+      },
+      {
+        from: 1630, to: 1634, label: '瑞典阶段',
+        note: '古斯塔夫二世登陆波美拉尼亚，瑞典成为新教阵营核心；1634 年内德林根战败。',
+        a: { label: '瑞典—萨克森—荷兰', polities: [{ name: 'Sweden', label: '瑞典' }, { name: 'Saxony', label: '萨克森' }, { name: 'Dutch Republic', label: '荷兰共和国' }] },
+        b: { label: '哈布斯堡—西班牙—巴伐利亚', polities: [{ name: 'Holy Roman Empire', label: '神圣罗马帝国' }, { name: 'Spain', label: '西班牙' }, { name: 'Bavaria', label: '巴伐利亚' }] },
+      },
+      {
+        from: 1635, to: 1648, label: '法国参战阶段', snapshot: 1650,
+        note: '法国直接对西班牙宣战，战争从宗教冲突转为哈布斯堡与波旁的地缘决战。',
+        a: { label: '法国—瑞典—荷兰—萨克森', polities: [{ name: 'France', label: '法国' }, { name: 'Sweden', label: '瑞典' }, { name: 'Dutch Republic', label: '荷兰共和国' }, { name: 'Saxony', label: '萨克森' }] },
+        b: { label: '哈布斯堡—西班牙—巴伐利亚', polities: [{ name: 'Holy Roman Empire', label: '神圣罗马帝国' }, { name: 'Spain', label: '西班牙' }, { name: 'Habsburg Netherlands', label: '哈布斯堡尼德兰' }, { name: 'Bavaria', label: '巴伐利亚' }] },
+      },
+    ],
     summary:
       '1618 年布拉格“掷出窗外事件”引爆哈布斯堡与波希米亚新教贵族的冲突，丹麦、瑞典、法国相继卷入。战争使中欧人口锐减；1648 年《威斯特伐利亚和约》确立主权国家与宗教宽容框架，神圣罗马帝国进一步虚化。',
     battles: [
@@ -160,6 +180,20 @@ window.HISTORY_WARS = [
       a: { label: '普鲁士—英国—汉诺威', polities: [{ name: 'Prussia', label: '普鲁士' }, { name: 'United Kingdom', label: '英国' }, { name: 'Hanover', label: '汉诺威' }] },
       b: { label: '奥地利—法国—俄国—瑞典—萨克森', polities: [{ name: 'Austrian Empire', label: '奥地利' }, { name: 'France', label: '法国' }, { name: 'Tsardom of Muscovy', label: '俄国' }, { name: 'Sweden', label: '瑞典' }, { name: 'Saxony', label: '萨克森' }] },
     },
+    phases: [
+      {
+        from: 1756, to: 1761, label: '英普同盟 vs 奥法俄',
+        note: '“外交革命”后的主战场：普鲁士在萨克森、西里西亚与波希米亚对抗奥法俄；英国在海上与北美牵制法国。',
+        a: { label: '普鲁士—英国—汉诺威', polities: [{ name: 'Prussia', label: '普鲁士' }, { name: 'United Kingdom', label: '英国' }, { name: 'Hanover', label: '汉诺威' }] },
+        b: { label: '奥地利—法国—俄国—瑞典—萨克森', polities: [{ name: 'Austrian Empire', label: '奥地利' }, { name: 'France', label: '法国' }, { name: 'Tsardom of Muscovy', label: '俄国' }, { name: 'Sweden', label: '瑞典' }, { name: 'Saxony', label: '萨克森' }] },
+      },
+      {
+        from: 1762, to: 1763, label: '西班牙参战阶段',
+        note: '1762 年西班牙依据“家族条约”加入法国一方，葡萄牙则站在英国一方；但战局已由英国海上优势决定。',
+        a: { label: '普鲁士—英国—汉诺威—葡萄牙', polities: [{ name: 'Prussia', label: '普鲁士' }, { name: 'United Kingdom', label: '英国' }, { name: 'Hanover', label: '汉诺威' }, { name: 'Portugal', label: '葡萄牙' }] },
+        b: { label: '奥地利—法国—俄国—瑞典—萨克森—西班牙', polities: [{ name: 'Austrian Empire', label: '奥地利' }, { name: 'France', label: '法国' }, { name: 'Tsardom of Muscovy', label: '俄国' }, { name: 'Sweden', label: '瑞典' }, { name: 'Saxony', label: '萨克森' }, { name: 'Spain', label: '西班牙' }] },
+      },
+    ],
     summary:
       '“外交革命”重组欧洲同盟：普鲁士与英国结盟，对抗奥地利、法国、俄国、瑞典与萨克森。1757 年罗斯巴赫与洛伊滕战役使普鲁士绝处逢生，1763 年《巴黎和约》与《胡贝图斯堡和约》确认英国海外霸权与普鲁士的崛起。',
     battles: [
@@ -205,22 +239,49 @@ window.HISTORY_WARS = [
     name: '拿破仑战争',
     start: 1803,
     end: 1815,
-    snapshot: 1815,
+    snapshot: 1800,
     sides: {
       a: { label: '法兰西帝国及附庸', polities: [{ name: 'France', label: '法国' }, { name: 'Bavaria', label: '巴伐利亚' }, { name: 'Saxony', label: '萨克森' }] },
       b: { label: '反法同盟', polities: [{ name: 'United Kingdom of Great Britain and Ireland', label: '英国' }, { name: 'Russian Empire', label: '俄国' }, { name: 'Austrian Empire', label: '奥地利' }, { name: 'Prussia', label: '普鲁士' }, { name: 'Spain', label: '西班牙' }, { name: 'Portugal', label: '葡萄牙' }, { name: 'Sweden–Norway', label: '瑞典-挪威' }] },
     },
+    phases: [
+      {
+        from: 1803, to: 1807, label: '第三、第四次反法同盟',
+        note: '1805 年奥斯特里茨、1806 年耶拿—奥尔施泰特、1807 年弗里德兰，法国击败奥、普、俄，建立大陆体系。',
+        a: { label: '法国—巴伐利亚—萨克森', polities: [{ name: 'France', label: '法国' }, { name: 'Bavaria', label: '巴伐利亚' }, { name: 'Saxony', label: '萨克森' }] },
+        b: { label: '英国—奥地利—俄国—普鲁士—瑞典', polities: [{ name: 'United Kingdom of Great Britain and Ireland', label: '英国' }, { name: 'Austrian Empire', label: '奥地利' }, { name: 'Russian Empire', label: '俄国' }, { name: 'Prussia', label: '普鲁士' }, { name: 'Sweden–Norway', label: '瑞典' }] },
+      },
+      {
+        from: 1809, to: 1809, label: '第五次反法同盟',
+        note: '奥地利单独对法开战，瓦格拉姆战役后再度战败；普鲁士、俄国暂未参战。',
+        a: { label: '法国—巴伐利亚—萨克森', polities: [{ name: 'France', label: '法国' }, { name: 'Bavaria', label: '巴伐利亚' }, { name: 'Saxony', label: '萨克森' }] },
+        b: { label: '英国—奥地利', polities: [{ name: 'United Kingdom of Great Britain and Ireland', label: '英国' }, { name: 'Austrian Empire', label: '奥地利' }] },
+      },
+      {
+        from: 1812, to: 1814, label: '第六次反法同盟', snapshot: 1815,
+        note: '远征俄国失败后，俄、普、奥、英、瑞典与西班牙、葡萄牙联合；1813 年莱比锡、1814 年巴黎陷落。',
+        a: { label: '法国—巴伐利亚—萨克森', polities: [{ name: 'France', label: '法国' }, { name: 'Bavaria', label: '巴伐利亚' }, { name: 'Saxony', label: '萨克森' }] },
+        b: { label: '英—俄—普—奥—瑞典—西—葡', polities: [{ name: 'United Kingdom of Great Britain and Ireland', label: '英国' }, { name: 'Russian Empire', label: '俄国' }, { name: 'Prussia', label: '普鲁士' }, { name: 'Austrian Empire', label: '奥地利' }, { name: 'Sweden–Norway', label: '瑞典' }, { name: 'Spain', label: '西班牙' }, { name: 'Portugal', label: '葡萄牙' }] },
+      },
+      {
+        from: 1815, to: 1815, label: '百日与第七次反法同盟', snapshot: 1815,
+        note: '拿破仑重返巴黎，英、俄、普、奥、荷联合；滑铁卢战役终结帝国。',
+        a: { label: '法国', polities: [{ name: 'France', label: '法国' }] },
+        b: { label: '英—俄—普—奥—荷兰', polities: [{ name: 'United Kingdom of Great Britain and Ireland', label: '英国' }, { name: 'Russian Empire', label: '俄国' }, { name: 'Prussia', label: '普鲁士' }, { name: 'Austrian Empire', label: '奥地利' }, { name: 'Netherlands', label: '荷兰' }] },
+      },
+    ],
     summary:
       '1805 年奥斯特里茨与特拉法加分别奠定陆海格局；1806 年大陆体系封锁英国。1812 年远征俄国失败，1813 年莱比锡会战、1814 年巴黎陷落、1815 年滑铁卢终结帝国，维也纳会议重划欧洲。',
     battles: [
       { year: 1805, name: '奥斯特里茨', lon: 16.76, lat: 49.13 },
       { year: 1807, name: '弗里德兰', lon: 21.01, lat: 54.36 },
+      { year: 1809, name: '瓦格拉姆', lon: 16.5, lat: 48.3 },
       { year: 1812, name: '博罗季诺', lon: 35.78, lat: 55.52 },
       { year: 1813, name: '莱比锡', lon: 12.37, lat: 51.34 },
       { year: 1815, name: '滑铁卢', lon: 4.36, lat: 50.82 },
     ],
     outcome: '法兰西帝国崩溃，维也纳体系确立；民族主义与自由主义在全欧扩散。',
-    note: '地图快照 1815 年，为战争结束后的边界，不等同于拿破仑鼎盛时期。',
+    note: '地图快照 1800 年，为拿破仑战争爆发前的边界。',
     sources: [
       { label: '《世界史·近代史编》上卷（第2版），第三章' },
       { label: 'Wikipedia · 拿破仑战争', url: 'https://zh.wikipedia.org/wiki/拿破仑战争' },
@@ -302,7 +363,7 @@ window.HISTORY_WARS = [
     name: '普法战争',
     start: 1870,
     end: 1871,
-    snapshot: 1900,
+    snapshot: 1880,
     sides: {
       a: { label: '普鲁士—德意志诸邦', polities: [{ name: 'Germany', label: '德意志' }] },
       b: { label: '法兰西第二帝国', polities: [{ name: 'France', label: '法国' }] },
@@ -315,7 +376,7 @@ window.HISTORY_WARS = [
       { year: 1871, name: '巴黎', lon: 2.35, lat: 48.86 },
     ],
     outcome: '法国战败，德意志帝国成立；阿尔萨斯-洛林与赔款埋下法德长期对立。',
-    note: '地图快照 1900 年，用于呈现统一后的德意志帝国；战争发生于 1870–71 年。',
+    note: '地图快照 1880 年，用于呈现统一后的德意志帝国；战争发生于 1870–71 年。',
     sources: [
       { label: '《世界史·近代史编》下卷（第2版），第五章第一节“俾斯麦与德国的统一”' },
       { label: 'Wikipedia · 普法战争', url: 'https://zh.wikipedia.org/wiki/普法战争' },
@@ -326,7 +387,7 @@ window.HISTORY_WARS = [
     name: '俄土战争',
     start: 1877,
     end: 1878,
-    snapshot: 1900,
+    snapshot: 1880,
     sides: {
       a: { label: '俄国—罗马尼亚—塞尔维亚—黑山', polities: [{ name: 'Russian Empire', label: '俄国' }, { name: 'Romania', label: '罗马尼亚' }, { name: 'Serbia', label: '塞尔维亚' }, { name: 'Montenegro', label: '黑山' }] },
       b: { label: '奥斯曼帝国', polities: [{ name: 'Ottoman Empire', label: '奥斯曼帝国' }] },
@@ -339,7 +400,7 @@ window.HISTORY_WARS = [
       { year: 1878, name: '柏林', lon: 13.4, lat: 52.52 },
     ],
     outcome: '奥斯曼帝国在巴尔干大幅退却；保加利亚自治，塞、罗、黑独立，奥匈与俄国在巴尔干的竞争加剧。',
-    note: '地图快照 1900 年，用于呈现柏林会议后的巴尔干格局。',
+    note: '地图快照 1880 年，用于呈现柏林会议后的巴尔干格局。',
     sources: [
       { label: '《世界史·近代史编》下卷（第2版），第六章第二节“1871—1900年的国际关系”' },
       { label: 'Wikipedia · 俄土战争 (1877—1878)', url: 'https://zh.wikipedia.org/wiki/俄土战争_(1877年—1878年)' },
