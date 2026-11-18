@@ -1,5 +1,5 @@
 /* Service Worker：主站应用壳离线缓存；研究模式数据按访问运行时缓存。 */
-const VERSION = 'europa-2026-11-18-1';
+const VERSION = 'europa-2026-11-18-2';
 const CACHE = 'atlas-' + VERSION;
 
 const CORE = [
@@ -59,7 +59,8 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE).then((cache) => cache.put(request, copy));
           return response;
         })
-        .catch(() => caches.match(request).then((cached) => cached || caches.match('./index.html'))),
+        .catch(() => caches.match(request, { ignoreSearch: true })
+          .then((cached) => cached || caches.match('./index.html'))),
     );
     return;
   }

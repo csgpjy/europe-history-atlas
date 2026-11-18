@@ -4,6 +4,10 @@
 (function () {
   'use strict';
 
+  if (new URLSearchParams(location.search).get('embed') === '1') {
+    document.body.classList.add('is-embedded');
+  }
+
   var ATLAS = window.ATLAS;
   var WARS = window.HISTORY_WARS;
   if (!ATLAS || !WARS || !WARS.length) return;

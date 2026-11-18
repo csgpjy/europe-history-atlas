@@ -24,5 +24,19 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "战争线 1494–1878",
+      "short_name": "战争线",
+      "description": "14 场国家间战争与阶段",
+      "url": "./#wars",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
