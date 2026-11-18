@@ -47,10 +47,13 @@ assert(years.every((y, i) => i === 0 || years[i - 1] < y), '快照年份未升�
 const requiredFiles = [
   'index.html',
   'wars.html',
+  'research.html',
   'css/style.css',
   'css/wars.css',
+  'css/research.css',
   'js/app.js',
   'js/wars.js',
+  'js/research.js',
   'data/events.js',
   'data/events-meta.js',
   'data/events-extra.js',
@@ -70,6 +73,7 @@ for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/events.js', 'dat
   assert(html.includes('src="' + src + '"'), 'index.html 未引用 ' + src);
 }
 assert(html.includes('href="wars.html"'), 'index.html 未链接战争线页面');
+assert(html.includes('href="research.html"'), 'index.html 未链接研究模式');
 
 const warHtml = fs.readFileSync(path.join(root, 'wars.html'), 'utf8');
 for (const id of ['map', 'eras', 'sideLabels', 'battles', 'warPanel', 'warTimeline', 'warTrack', 'warAxis', 'warLanes']) {
@@ -77,6 +81,15 @@ for (const id of ['map', 'eras', 'sideLabels', 'battles', 'warPanel', 'warTimeli
 }
 for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/wars.js', 'js/wars.js']) {
   assert(warHtml.includes('src="' + src + '"'), 'wars.html 未引用 ' + src);
+}
+assert(warHtml.includes('href="research.html"'), 'wars.html 未链接研究模式');
+
+const researchHtml = fs.readFileSync(path.join(root, 'research.html'), 'utf8');
+for (const id of ['researchYear', 'researchYearOut', 'ohmLoad', 'ohmUnload', 'ohmFrameWrap', 'ohmStatus']) {
+  assert(researchHtml.includes('id="' + id + '"'), 'research.html 缺少 #' + id);
+}
+for (const src of ['js/research.js']) {
+  assert(researchHtml.includes('src="' + src + '"'), 'research.html 未引用 ' + src);
 }
 
 const ids = new Set();
@@ -149,6 +162,23 @@ for (const war of wars) {
     }
   }
   assert(war.summary && war.summary.length >= 40, prefix + '：summary 少于 40 字');
+  if (war.phases) {
+    assert(Array.isArray(war.phases) && war.phases.length >= 2, prefix + '：phases 少于 2 段');
+    let previousEnd = war.start - 1;
+    for (const phase of war.phases) {
+      assert(phase.from >= war.start && phase.to <= war.end && phase.from <= phase.to, prefix + '：阶段年份越界');
+      assert(phase.from >= previousEnd, prefix + '：阶段年份重叠或乱序');
+      previousEnd = phase.to;
+      assert(phase.label, prefix + '：阶段缺少 label');
+      if (phase.snapshot) assert(years.includes(phase.snapshot), prefix + '：阶段 snapshot 不在边界快照中');
+      for (const key of ['a', 'b']) {
+        assert(phase[key] && phase[key].label, prefix + '：阶段缺少交战方 ' + key);
+        assert(Array.isArray(phase[key].polities) && phase[key].polities.length >= 1, prefix + '：阶段 ' + key + ' 没有政权');
+      }
+    }
+    assert(war.phases[0].from === war.start, prefix + '：第一阶段未从战争开始');
+    assert(war.phases[war.phases.length - 1].to === war.end, prefix + '：最后阶段未到战争结束');
+  }
   assert(Array.isArray(war.battles) && war.battles.length >= 1, prefix + '：缺少战役');
   for (const battle of war.battles || []) {
     assert(battle.name && Number.isFinite(battle.year), prefix + '：战役条目无效');

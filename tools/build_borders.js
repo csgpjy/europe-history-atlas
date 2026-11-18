@@ -5,7 +5,7 @@ const atlas = path.resolve(__dirname, '..');
 const d3 = require(path.join(atlas, 'vendor', 'd3.min.js'));
 const topojson = require(path.join(atlas, 'vendor', 'topojson-client.min.js'));
 
-const YEARS = [1500, 1600, 1700, 1715, 1783, 1815, 1900].filter((year) =>
+const YEARS = [1500, 1600, 1650, 1700, 1715, 1783, 1800, 1815, 1880, 1900].filter((year) =>
   fs.existsSync(path.join(atlas, 'data', 'geo', 'world_' + year + '.geojson')),
 );
 const BOX = [-180, -90, 180, 90];
@@ -272,11 +272,88 @@ function buildGraticule() {
   return d;
 }
 
+function inView(lon, lat) {
+  return lon >= -32 && lon <= 52 && lat >= 28 && lat <= 78;
+}
+
+function projectLine(coords) {
+  let d = '';
+  let started = false;
+  for (const [lon, lat] of coords) {
+    if (!inView(lon, lat)) { started = false; continue; }
+    const p = proj([lon, lat]);
+    if (!p || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) { started = false; continue; }
+    d += (started ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1);
+    started = true;
+  }
+  return d;
+}
+
+function buildRivers() {
+  const data = JSON.parse(fs.readFileSync(path.join(atlas, 'data', 'geo', 'ne_50m_rivers_lake_centerlines.geojson'), 'utf8'));
+  let d = '';
+  for (const feature of data.features) {
+    const geometry = feature.geometry;
+    if (!geometry) continue;
+    const lines = geometry.type === 'LineString' ? [geometry.coordinates] :
+      geometry.type === 'MultiLineString' ? geometry.coordinates : [];
+    for (const line of lines) {
+      d += projectLine(rdp(line.map((p) => [p[0], p[1]]), 0.02));
+    }
+  }
+  console.log('rivers path bytes=', d.length);
+  return d;
+}
+
+function buildLakes() {
+  const data = JSON.parse(fs.readFileSync(path.join(atlas, 'data', 'geo', 'ne_50m_lakes.geojson'), 'utf8'));
+  let d = '';
+  for (const feature of data.features) {
+    if (!feature.geometry) continue;
+    d += shapePaths(feature.geometry).d;
+  }
+  console.log('lakes path bytes=', d.length);
+  return d;
+}
+
+function buildCities() {
+  const data = JSON.parse(fs.readFileSync(path.join(atlas, 'data', 'geo', 'ne_50m_populated_places.geojson'), 'utf8'));
+  const cities = [];
+  const seen = new Set();
+  for (const feature of data.features) {
+    const props = feature.properties || {};
+    if (!props.NAME || !feature.geometry) continue;
+    const scalerank = Number(props.SCALERANK);
+    const pop = Number(props.POP_MAX) || 0;
+    if (!(scalerank <= 3 || pop >= 1000000)) continue;
+    const [lon, lat] = feature.geometry.coordinates;
+    if (!inView(lon, lat)) continue;
+    const name = props.NAME_ZH || props.NAME;
+    if (seen.has(name)) continue;
+    seen.add(name);
+    const p = proj([lon, lat]);
+    if (!p || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) continue;
+    if (p[0] < 10 || p[0] > 990 || p[1] < 10 || p[1] > 810) continue;
+    cities.push({
+      n: name,
+      x: +p[0].toFixed(1),
+      y: +p[1].toFixed(1),
+      r: Number.isFinite(scalerank) ? scalerank : 5,
+    });
+  }
+  cities.sort((a, b) => a.r - b.r || a.n.localeCompare(b.n));
+  const top = cities.slice(0, 36);
+  console.log('cities=', top.length);
+  return top;
+}
+
 const out = {
   viewBox: [0, 0, VIEW[0], VIEW[1]],
   years: YEARS,
   land: '',
   graticule: buildGraticule(),
+  water: { rivers: buildRivers(), lakes: buildLakes() },
+  cities: buildCities(),
   borders: {},
 };
 for (const year of YEARS) out.borders[year] = buildYear(year);

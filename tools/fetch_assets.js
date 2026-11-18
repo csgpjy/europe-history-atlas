@@ -10,8 +10,14 @@ const geo = path.join(root, 'data', 'geo');
 fs.mkdirSync(vendor, { recursive: true });
 fs.mkdirSync(geo, { recursive: true });
 
-const YEARS = [1500, 1600, 1700, 1715, 1783, 1815, 1900];
+const YEARS = [1500, 1600, 1650, 1700, 1715, 1783, 1800, 1815, 1880, 1900];
 const REPO = 'aourednik/historical-basemaps';
+const NE_REPO = 'nvkelso/natural-earth-vector';
+const NE_FILES = [
+  'ne_50m_rivers_lake_centerlines.geojson',
+  'ne_50m_lakes.geojson',
+  'ne_50m_populated_places.geojson',
+];
 
 async function downloadOne(url, dest, headers = {}) {
   const res = await fetch(url, {
@@ -69,6 +75,22 @@ async function main() {
       [
         'https://raw.githubusercontent.com/' + REPO + '/master/geojson/world_' + year + '.geojson',
         'https://api.github.com/repos/' + REPO + '/contents/geojson/world_' + year + '.geojson',
+      ],
+      dest,
+      { Accept: 'application/vnd.github.raw' },
+    );
+  }
+
+  for (const file of NE_FILES) {
+    const dest = path.join(geo, file);
+    if (fs.existsSync(dest) && fs.statSync(dest).size > 1000) {
+      console.log('SKIP', file);
+      continue;
+    }
+    await download(
+      [
+        'https://raw.githubusercontent.com/' + NE_REPO + '/master/geojson/' + file,
+        'https://api.github.com/repos/' + NE_REPO + '/contents/geojson/' + file,
       ],
       dest,
       { Accept: 'application/vnd.github.raw' },
