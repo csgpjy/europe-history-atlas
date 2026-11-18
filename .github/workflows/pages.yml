@@ -46,8 +46,8 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/css _site/js _site/data/research _site/vendor _site/assets/icons
-          cp index.html wars.html research.html manifest.webmanifest sw.js _site/
-          cp css/style.css css/wars.css css/research.css _site/css/
+          cp index.html wars.html research.html install.html manifest.webmanifest sw.js _site/
+          cp css/style.css css/wars.css css/research.css css/install.css _site/css/
           cp js/app.js js/wars.js js/research.js js/pwa.js _site/js/
           cp data/events.js data/events-meta.js data/events-extra.js data/wars.js data/borders.js _site/data/
           cp data/research/*.geojson data/research/index.json _site/data/research/

@@ -48,9 +48,11 @@ const requiredFiles = [
   'index.html',
   'wars.html',
   'research.html',
+  'install.html',
   'css/style.css',
   'css/wars.css',
   'css/research.css',
+  'css/install.css',
   'js/app.js',
   'js/wars.js',
   'js/research.js',
@@ -119,7 +121,13 @@ for (const icon of manifest.icons || []) {
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 assert(sw.includes('serviceWorker') === false && sw.includes('caches.open'), 'sw.js 缺少缓存逻辑');
 assert(sw.includes('./index.html') && sw.includes('./data/borders.js'), 'sw.js 核心缓存不完整');
+assert(sw.includes('./install.html'), 'sw.js 未缓存手机安装页');
 assert(sw.includes('ignoreSearch'), 'sw.js 导航回退应按 ignoreSearch 匹配嵌入页');
+
+const installHtml = fs.readFileSync(path.join(root, 'install.html'), 'utf8');
+for (const marker of ['id="copyUrl"', 'id="deviceHint"', 'Edge Android', '添加到主屏幕', 'install.css']) {
+  assert(installHtml.includes(marker), 'install.html 缺少 ' + marker);
+}
 
 const researchIndex = JSON.parse(fs.readFileSync(path.join(root, 'data', 'research', 'index.json'), 'utf8'));
 assert(Array.isArray(researchIndex.years) && researchIndex.years.length === 10, 'research/index.json 快照数量不为 10');
