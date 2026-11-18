@@ -10,6 +10,7 @@
 
   var ATLAS = window.ATLAS;
   var WARS = window.HISTORY_WARS;
+  var DETAILS = window.WAR_DETAILS || {};
   if (!ATLAS || !WARS || !WARS.length) return;
 
   var YEARS = ATLAS.years.slice().sort(function (a, b) { return a - b; });
@@ -37,6 +38,34 @@
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function detailFor(war) { return DETAILS[war.id] || {}; }
+  function impactsFor(war) { return detailFor(war).impacts || {}; }
+  function treatiesFor(war) { return detailFor(war).treaties || []; }
+
+  function textbookSource(war) {
+    var sources = war.sources || [];
+    for (var i = 0; i < sources.length; i += 1) {
+      if (sources[i].label && sources[i].label.indexOf('世界史·近代史编') !== -1) return sources[i].label;
+    }
+    return '';
+  }
+
+  function countryLabel(war, name) {
+    var sides = currentSides(war);
+    for (var key in sides) {
+      if (!Object.prototype.hasOwnProperty.call(sides, key)) continue;
+      var polities = sides[key].polities || [];
+      for (var i = 0; i < polities.length; i += 1) {
+        if (polities[i].name === name) return polities[i].label || WAR_CN[name] || name;
+      }
+    }
+    return WAR_CN[name] || name;
+  }
+
+  function activeWar() {
+    return WARS.filter(function (war) { return war.id === state.activeId; })[0] || null;
   }
 
   function percent(year) {
@@ -186,6 +215,22 @@
   /* ── 高亮与标记 ─────────────────────────────────── */
   var sideLabelLayer = svg.select('#sideLabels');
   var battleLayer = svg.select('#battles');
+  var treatyLayer = svg.select('#treaties');
+  var warImpact = document.getElementById('warImpact');
+  var warImpactSide = document.getElementById('warImpactSide');
+  var warImpactName = document.getElementById('warImpactName');
+  var warImpactText = document.getElementById('warImpactText');
+  var warImpactClose = document.getElementById('warImpactClose');
+
+  function hideCountryImpact() {
+    if (warImpact) {
+      warImpact.hidden = true;
+      warImpact.classList.remove('is-open');
+    }
+    document.querySelectorAll('.polity.impact-selected').forEach(function (node) {
+      node.classList.remove('impact-selected');
+    });
+  }
 
   function clearMapSelection() {
     document.querySelectorAll('.polity.side-a, .polity.side-b').forEach(function (node) {
@@ -194,6 +239,60 @@
     });
     sideLabelLayer.selectAll('*').remove();
     battleLayer.selectAll('*').remove();
+    treatyLayer.selectAll('*').remove();
+    hideCountryImpact();
+  }
+
+  function renderTreaties(war) {
+    treatyLayer.selectAll('*').remove();
+    var treaties = treatiesFor(war);
+    var shown = 0;
+    treaties.forEach(function (treaty) {
+      if (shown >= 6) return;
+      var xy = projection([treaty.lon, treaty.lat]);
+      if (!xy || !isFinite(xy[0]) || !isFinite(xy[1])) return;
+      if (xy[0] < 8 || xy[0] > 992 || xy[1] < 8 || xy[1] > 812) return;
+      var group = treatyLayer.append('g')
+        .attr('class', 'treaty-marker')
+        .attr('transform', 'translate(' + xy[0].toFixed(1) + ',' + xy[1].toFixed(1) + ')');
+      group.append('path').attr('class', 'treaty-core').attr('d', 'M0,-4.2L4.2,0L0,4.2L-4.2,0Z');
+      group.append('text').attr('class', 'treaty-label').attr('x', 6).attr('y', 3).text(treaty.year);
+      group.on('mousemove', function (event) {
+        showTooltip(event, treaty.name, treaty.year + ' 年 · ' + treaty.summary);
+      });
+      group.on('mouseleave', hideTooltip);
+      shown += 1;
+    });
+  }
+
+  function showCountryImpact(name) {
+    var war = activeWar();
+    if (!war) return;
+    var impacts = impactsFor(war);
+    var info = impacts[name];
+    if (!info) {
+      hideCountryImpact();
+      return;
+    }
+    if (!warImpact) return;
+    hideCountryImpact();
+    warImpactSide.textContent = info.side === 'a' ? '交战方 A 的影响' : '交战方 B 的影响';
+    warImpactSide.className = 'war-impact-kicker side-' + info.side;
+    warImpactName.textContent = countryLabel(war, name);
+    warImpactText.textContent = info.text;
+    warImpact.hidden = false;
+    warImpact.classList.add('is-open');
+    if (window.matchMedia('(max-width: 940px)').matches) {
+      panel.classList.remove('is-open');
+    }
+    var path = null;
+    var group = eraGroups.get(state.era);
+    if (group) {
+      group.selectAll('.polity').each(function () {
+        if (this.getAttribute('data-name') === name) path = this;
+      });
+    }
+    if (path) path.classList.add('impact-selected');
   }
 
   function renderSides(war) {
@@ -283,7 +382,7 @@
       '<div class="panel-kicker">战争线 · 国家间战争</div>' +
       '<h2>十四场战争，<em>一部欧洲均势史</em></h2>' +
       '<p class="panel-summary">从意大利战争到俄土战争，这里只收录<strong>国家之间的战争</strong>。' +
-      '点击色条或列表，查看交战双方、关键战役、结果与教材章节；地图以紫、金两色区分两大阵营。</p>' +
+      '点击色条或列表，查看交战双方、各国影响、条约、关键战役与教材章节；地图以紫、金两色区分两大阵营。</p>' +
       '<div class="panel-note">范围：1494–1878 年，欧洲列强之间的主要战争；内战、殖民地战争与帝国扩张不在此列。</div>' +
       '<div class="panel-section"><h3>战争索引</h3>' + html + '</div>' +
       '<div class="panel-foot">史料：吴于廑、齐世荣主编《世界史·近代史编》上/下卷（高等教育出版社，第2版）</div>';
@@ -312,6 +411,26 @@
     var battles = (war.battles || []).map(function (battle) {
       return '<li><b>' + battle.year + '</b><span>' + escapeHtml(battle.name) + '</span></li>';
     }).join('');
+    var impacts = impactsFor(war);
+    var impactNames = Object.keys(impacts).sort(function (left, right) {
+      var sideOrder = { a: 0, b: 1 };
+      var leftSide = sideOrder[impacts[left].side] || 0;
+      var rightSide = sideOrder[impacts[right].side] || 0;
+      if (leftSide !== rightSide) return leftSide - rightSide;
+      return countryLabel(war, left).localeCompare(countryLabel(war, right), 'zh-Hans-CN');
+    });
+    var impactButtons = impactNames.map(function (name) {
+      var info = impacts[name];
+      return '<button type="button" class="war-country-chip side-' + info.side +
+        '" data-country="' + escapeHtml(name) + '">' +
+        escapeHtml(countryLabel(war, name)) + '</button>';
+    }).join('');
+    var treaties = treatiesFor(war);
+    var treatyList = treaties.map(function (treaty) {
+      return '<li><b>' + treaty.year + '</b><span><strong>' + escapeHtml(treaty.name) +
+        '</strong><br>' + escapeHtml(treaty.summary) + '</span></li>';
+    }).join('');
+    var treatiseSource = textbookSource(war);
     var sources = (war.sources || []).map(function (source) {
       if (source.url) {
         return '<li><a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">' +
@@ -331,7 +450,21 @@
       '</div>' +
       '<p class="panel-summary">' + escapeHtml(war.summary) + '</p>' +
       (phase && phase.note ? '<p class="panel-note"><strong>本阶段：</strong>' + escapeHtml(phase.note) + '</p>' : '') +
+      (impactButtons
+        ? '<div class="panel-section war-impact-section"><h3>战争对各国的影响</h3>' +
+          '<p class="panel-note">点击地图上的国家，或下方任一国家，查看这场战争对它的具体影响。</p>' +
+          '<div class="war-country-grid">' + impactButtons + '</div>' +
+          (treatiseSource ? '<p class="source-inline">教材依据：' + escapeHtml(treatiseSource) + '</p>' : '') +
+          '</div>'
+        : '') +
       '<div class="panel-section"><h3>关键战役</h3><ul class="war-battle-list">' + battles + '</ul></div>' +
+      (treatyList
+        ? '<div class="panel-section treaty-section"><h3>条约与安排</h3><ul class="treaty-list">' +
+          treatyList + '</ul>' +
+          (treatiseSource ? '<p class="source-inline">教材依据：' + escapeHtml(treatiseSource) +
+            '；条约细节以延伸阅读补充。</p>' : '') +
+          '</div>'
+        : '') +
       '<p class="panel-note"><strong>结果：</strong>' + escapeHtml(war.outcome) + '</p>' +
       '<p class="panel-note">' + escapeHtml(war.note) + '</p>' +
       '<div class="panel-section"><h3>教材与延伸</h3><ul class="source-list">' + sources + '</ul></div>' +
@@ -342,6 +475,11 @@
     panelScroll.querySelectorAll('[data-phase]').forEach(function (button) {
       button.addEventListener('click', function () {
         selectPhase(Number(button.getAttribute('data-phase')));
+      });
+    });
+    panelScroll.querySelectorAll('[data-country]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        showCountryImpact(button.getAttribute('data-country'));
       });
     });
     panelScroll.scrollTop = 0;
@@ -362,6 +500,7 @@
     clearMapSelection();
     renderSides(war);
     renderBattles(war);
+    renderTreaties(war);
     renderWar(war);
     updateTimeline(war);
     var hash = war.phases && war.phases.length > 1 ? id + '/' + state.phaseIndex : id;
@@ -379,6 +518,7 @@
     clearMapSelection();
     renderSides(war);
     renderBattles(war);
+    renderTreaties(war);
     renderWar(war);
     updateTimeline(war);
     try { history.replaceState(null, '', '#' + war.id + '/' + index); } catch (e) { /* file:// */ }
@@ -412,6 +552,16 @@
     showTooltip(event, WAR_CN[name] || name, '');
   });
   eras.on('mouseleave', hideTooltip);
+
+  eras.on('click', function (event) {
+    var path = event.target.closest ? event.target.closest('.polity') : null;
+    if (!path || !activeWar()) return;
+    showCountryImpact(path.getAttribute('data-name'));
+  });
+
+  if (warImpactClose) {
+    warImpactClose.addEventListener('click', hideCountryImpact);
+  }
 
   document.getElementById('warClose').addEventListener('click', function () {
     panel.classList.remove('is-open');
