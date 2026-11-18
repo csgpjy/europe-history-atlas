@@ -8,7 +8,7 @@ https://csgpjy.github.io/europe-history-atlas/
 
 GitHub Pages 的 **Source 为 GitHub Actions**。每次推送到 `main`，工作流 **Build, validate and deploy atlas** 会：
 
-1. 下载 D3 与 7 个年份的历史边界；
+1. 下载 D3、10 个年份的历史边界与 Natural Earth 水系/城市；
 2. 裁剪 / 简化 / 圆锥投影，生成 `data/borders.js`；
 3. 运行 `tools/validate.js` 校验事件与地图数据；
 4. 组装 `_site/`；
