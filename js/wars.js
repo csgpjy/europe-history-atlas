@@ -369,7 +369,8 @@
     if (!war || !war.phases || !war.phases[index]) return;
     state.phaseIndex = index;
     var phase = war.phases[index];
-    var era = phase.snapshot && YEARS.indexOf(phase.snapshot) !== -1 ? phase.snapshot : state.era;
+    var targetEra = phase.snapshot || war.snapshot;
+    var era = YEARS.indexOf(targetEra) !== -1 ? targetEra : nearestEra(war.start);
     if (era !== state.era) setEra(era);
     clearMapSelection();
     renderSides(war);
