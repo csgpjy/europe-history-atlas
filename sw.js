@@ -1,5 +1,5 @@
 /* Service Worker：主站应用壳离线缓存；研究模式数据按访问运行时缓存。 */
-const VERSION = 'europa-2026-11-18-3';
+const VERSION = 'europa-2026-11-18-4';
 const CACHE = 'atlas-' + VERSION;
 
 const CORE = [
@@ -20,7 +20,9 @@ const CORE = [
   './data/events.js',
   './data/events-meta.js',
   './data/events-extra.js',
+  './data/event-significance.js',
   './data/wars.js',
+  './data/war-details.js',
   './data/borders.js',
   './vendor/d3.min.js',
   './vendor/topojson-client.min.js',
