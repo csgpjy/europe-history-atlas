@@ -3,6 +3,7 @@ data/geo/
 data/research/
 data/borders.json
 vendor/
+docs/screenshots/
 .preview*.png
 _site/
 .tmp/

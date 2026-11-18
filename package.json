@@ -6,6 +6,8 @@
   "scripts": {
     "fetch": "node tools/fetch_assets.js",
     "build": "node tools/build_borders.js",
+    "build:research": "node tools/build_research_geojson.js",
+    "build:all": "node tools/build_borders.js && node tools/build_research_geojson.js",
     "validate": "node tools/validate.js",
     "serve": "python -m http.server 8000"
   }

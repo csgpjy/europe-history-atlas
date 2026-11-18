@@ -40,13 +40,14 @@ jobs:
 
       - name: Assemble site
         run: |
-          mkdir -p _site/css _site/js _site/data/research _site/vendor
-          cp index.html wars.html research.html _site/
+          mkdir -p _site/css _site/js _site/data/research _site/vendor _site/assets/icons
+          cp index.html wars.html research.html manifest.webmanifest sw.js _site/
           cp css/style.css css/wars.css css/research.css _site/css/
-          cp js/app.js js/wars.js js/research.js _site/js/
+          cp js/app.js js/wars.js js/research.js js/pwa.js _site/js/
           cp data/events.js data/events-meta.js data/events-extra.js data/wars.js data/borders.js _site/data/
           cp data/research/*.geojson data/research/index.json _site/data/research/
           cp vendor/d3.min.js vendor/topojson-client.min.js vendor/maplibre-gl.js vendor/maplibre-gl.css _site/vendor/
+          cp assets/icons/* _site/assets/icons/
           touch _site/.nojekyll
 
       - name: Mirror to gh-pages branch

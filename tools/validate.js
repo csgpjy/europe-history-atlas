@@ -54,6 +54,12 @@ const requiredFiles = [
   'js/app.js',
   'js/wars.js',
   'js/research.js',
+  'js/pwa.js',
+  'manifest.webmanifest',
+  'sw.js',
+  'assets/icons/icon-192.png',
+  'assets/icons/icon-512.png',
+  'assets/icons/icon-180.png',
   'data/events.js',
   'data/events-meta.js',
   'data/events-extra.js',
@@ -77,6 +83,8 @@ for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/events.js', 'dat
 }
 assert(html.includes('href="wars.html"'), 'index.html 未链接战争线页面');
 assert(html.includes('href="research.html"'), 'index.html 未链接研究模式');
+assert(html.includes('href="manifest.webmanifest"'), 'index.html 未引用 manifest');
+assert(html.includes('src="js/pwa.js"'), 'index.html 未引用 pwa.js');
 
 const warHtml = fs.readFileSync(path.join(root, 'wars.html'), 'utf8');
 for (const id of ['map', 'eras', 'sideLabels', 'battles', 'warPanel', 'warTimeline', 'warTrack', 'warAxis', 'warLanes']) {
@@ -86,6 +94,8 @@ for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/wars.js', 'js/wa
   assert(warHtml.includes('src="' + src + '"'), 'wars.html 未引用 ' + src);
 }
 assert(warHtml.includes('href="research.html"'), 'wars.html 未链接研究模式');
+assert(warHtml.includes('href="manifest.webmanifest"'), 'wars.html 未引用 manifest');
+assert(warHtml.includes('src="js/pwa.js"'), 'wars.html 未引用 pwa.js');
 
 const researchHtml = fs.readFileSync(path.join(root, 'research.html'), 'utf8');
 for (const id of ['researchYear', 'researchYearOut', 'ohmLoad', 'ohmUnload', 'ohmFrameWrap', 'ohmStatus', 'mapYear', 'mapLoad', 'mapUnload', 'researchMap', 'mapStatus']) {
@@ -94,6 +104,19 @@ for (const id of ['researchYear', 'researchYearOut', 'ohmLoad', 'ohmUnload', 'oh
 for (const src of ['js/research.js']) {
   assert(researchHtml.includes('src="' + src + '"'), 'research.html 未引用 ' + src);
 }
+assert(researchHtml.includes('href="manifest.webmanifest"'), 'research.html 未引用 manifest');
+assert(researchHtml.includes('src="js/pwa.js"'), 'research.html 未引用 pwa.js');
+
+const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
+assert(manifest.name && manifest.short_name, 'manifest 缺少 name/short_name');
+assert(manifest.start_url === './' && manifest.scope === './', 'manifest start_url/scope 必须是相对路径');
+assert(manifest.display === 'standalone', 'manifest display 必须是 standalone');
+for (const icon of manifest.icons || []) {
+  assert(fs.existsSync(path.join(root, icon.src)), 'manifest 图标不存在：' + icon.src);
+}
+const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
+assert(sw.includes('serviceWorker') === false && sw.includes('caches.open'), 'sw.js 缺少缓存逻辑');
+assert(sw.includes('./index.html') && sw.includes('./data/borders.js'), 'sw.js 核心缓存不完整');
 
 const researchIndex = JSON.parse(fs.readFileSync(path.join(root, 'data', 'research', 'index.json'), 'utf8'));
 assert(Array.isArray(researchIndex.years) && researchIndex.years.length === 10, 'research/index.json 快照数量不为 10');
