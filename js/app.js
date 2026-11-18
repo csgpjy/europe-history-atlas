@@ -347,13 +347,21 @@
     var facts = (event.facts || []).map(function (fact) {
       return '<li><b>' + escapeHtml(fact.y) + '</b><span>' + escapeHtml(fact.t) + '</span></li>';
     }).join('');
-    var sources = (event.sources || []).map(function (source) {
+    var sourceItems = (event.sources || []).map(function (source) {
       if (source.url) {
         return '<li><a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">' +
           escapeHtml(source.label) + '</a></li>';
       }
       return '<li><span class="source-text">' + escapeHtml(source.label) + '</span></li>';
-    }).join('');
+    });
+    var hasTextbook = (event.sources || []).some(function (source) {
+      return (source.label || '').indexOf('世界史·近代史编') !== -1;
+    });
+    if (!hasTextbook && event.significanceSource) {
+      sourceItems.unshift('<li><span class="source-text source-primary">' +
+        escapeHtml(event.significanceSource) + '</span></li>');
+    }
+    var sources = sourceItems.join('');
 
     panelScroll.innerHTML =
       '<button class="back-link" id="backBtn">← 返回时期概览</button>' +
