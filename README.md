@@ -6,7 +6,7 @@
 **战争线：<https://csgpjy.github.io/europe-history-atlas/wars.html>**  
 **研究模式：<https://csgpjy.github.io/europe-history-atlas/research.html>**
 
-**手机安装：** 用 **Microsoft Edge** 打开主站，Android Edge 菜单选择“安装应用/添加到手机”，桌面 Edge 选择“应用 → 将此站点安装为应用”；iPhone 可用 Safari 分享 → 添加到主屏幕。详见 [docs/MOBILE.md](docs/MOBILE.md)。
+**手机安装：** 用 **Microsoft Edge** 打开主站，Android Edge 菜单选择“安装应用/添加到手机”，桌面 Edge 选择“应用 → 将此站点安装为应用”；iPhone 可用 Safari 分享 → 添加到主屏幕。遇到“无法安装此应用”，打开 [install.html](https://csgpjy.github.io/europe-history-atlas/install.html) 用“添加到主屏幕”兜底。详见 [docs/MOBILE.md](docs/MOBILE.md)。
 
 ## 特点
 
@@ -64,6 +64,7 @@ node tools/build_research_geojson.js # MapLibre 单年 GeoJSON → data/research
 index.html              时代全景：地图、时间轴、分类筛选、知识面板
 wars.html               战争线：14 场国家间战争、双方阵营、阶段与战役
 research.html           研究模式：MapLibre 自托管原型 + OHM 对照 + Cliopatria 说明
+install.html            手机安装帮助：Edge 无法安装时的主屏快捷方式兜底
 manifest.webmanifest    PWA 清单：名称、图标、独立窗口、主题色
 sw.js                   Service Worker：应用壳离线缓存
 assets/icons/           PWA / Apple touch / favicon 图标

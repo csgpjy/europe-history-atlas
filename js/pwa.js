@@ -12,7 +12,6 @@
 
   var ua = navigator.userAgent || '';
   var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
-  var isEdge = /Edg\//.test(ua);
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
   var deferredPrompt = null;
@@ -44,6 +43,7 @@
       '<li><b>iPhone</b>：分享按钮 → “添加到主屏幕”；若 Edge 没有该选项，请用 Safari 打开。</li>' +
       '</ol>' +
       '<p>安装后从主屏打开，可离线查看主站与战争线。研究模式的 MapLibre 图层首次需要联网。</p>' +
+      '<a class="pwa-help-link" href="install.html">完整手机安装指南 →</a>' +
       '<button type="button" class="pwa-help-ok">知道了</button>' +
       '</div>';
     document.body.appendChild(help);
@@ -92,10 +92,4 @@
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') closeHelp();
   });
-
-  if (isMobile || isEdge) {
-    window.addEventListener('load', function () {
-      setTimeout(showButton, 900);
-    });
-  }
 })();

@@ -7,6 +7,7 @@
 - 主站：<https://csgpjy.github.io/europe-history-atlas/>
 - 战争线：<https://csgpjy.github.io/europe-history-atlas/wars.html>
 - 研究模式：<https://csgpjy.github.io/europe-history-atlas/research.html>
+- **安装帮助（无法安装时看这里）：** <https://csgpjy.github.io/europe-history-atlas/install.html>
 
 GitHub Pages 使用 HTTPS，满足 Service Worker 与 PWA 安装前提。
 
@@ -21,7 +22,9 @@ GitHub Pages 使用 HTTPS，满足 Service Worker 与 PWA 安装前提。
 3. 选择 **“安装应用”** 或 **“添加到手机”**（不同 Edge 版本文案略有差异）。
 4. 桌面出现 **EUROPA** 图标后，可全屏打开。
 
-如果菜单里没有安装项：先正常浏览几秒，让 Service Worker 完成注册，再刷新页面重试。手机端页面左下角也会出现 **“安装到手机”** 按钮。
+如果菜单里没有安装项：先正常浏览几秒，让 Service Worker 完成注册，再刷新页面重试。手机端页面左下角也会出现 **“安装到手机”** 按钮；点开后可以进入完整安装帮助页。
+
+**如果 Edge 明确提示“无法安装此应用”**：不用继续纠结安装按钮。打开 Edge 菜单，选择 **“添加到手机”/“添加到主屏幕”**，创建快捷方式即可；这不是独立 PWA，但同样能从主屏打开完整站点。详细排查见 <https://csgpjy.github.io/europe-history-atlas/install.html>。
 
 ### Edge 桌面
 

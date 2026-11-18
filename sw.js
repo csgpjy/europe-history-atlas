@@ -1,5 +1,5 @@
 /* Service Worker：主站应用壳离线缓存；研究模式数据按访问运行时缓存。 */
-const VERSION = 'europa-2026-11-18-2';
+const VERSION = 'europa-2026-11-18-3';
 const CACHE = 'atlas-' + VERSION;
 
 const CORE = [
@@ -7,10 +7,12 @@ const CORE = [
   './index.html',
   './wars.html',
   './research.html',
+  './install.html',
   './manifest.webmanifest',
   './css/style.css',
   './css/wars.css',
   './css/research.css',
+  './css/install.css',
   './js/app.js',
   './js/wars.js',
   './js/research.js',
