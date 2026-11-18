@@ -772,6 +772,8 @@ input {
   letter-spacing: 0.03em;
 }
 
+.source-primary { color: var(--gold) !important; }
+
 .fact-list { list-style: none; margin: 0; padding: 0; }
 
 .fact-list li {
