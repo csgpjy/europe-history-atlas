@@ -11,7 +11,7 @@
   var YEARS = ATLAS.years.slice().sort(function (a, b) { return a - b; });
   var DOMAIN = [1490, 1905];
   var DEFAULT_WAR = 'spanish-succession-war';
-  var state = { activeId: null, era: 1700 };
+  var state = { activeId: null, era: 1700, phaseIndex: 0 };
 
   var WAR_CN = {
     France: '法国', Spain: '西班牙', Portugal: '葡萄牙', 'England and Ireland': '英国',
@@ -50,6 +50,16 @@
   }
 
   var svg = d3.select('#map');
+  svg.select('#rivers').attr('d', (ATLAS.water && ATLAS.water.rivers) || '');
+  svg.select('#lakes').attr('d', (ATLAS.water && ATLAS.water.lakes) || '');
+  var cityLayer = svg.select('#cities');
+  (ATLAS.cities || []).forEach(function (city) {
+    var group = cityLayer.append('g').attr('transform', 'translate(' + city.x + ',' + city.y + ')');
+    group.append('circle').attr('class', 'city-dot').attr('r', city.r <= 1 ? 1.5 : 1);
+    if (city.r <= 1) {
+      group.append('text').attr('class', 'city-label').attr('x', 3).attr('y', 2).text(city.n);
+    }
+  });
   var projection = d3.geoConicConformal()
     .parallels([38, 62])
     .rotate([-12, 0])
@@ -146,11 +156,24 @@
 
   if (warCount) warCount.textContent = WARS.length;
 
+  function currentPhase(war) {
+    return war.phases && war.phases[state.phaseIndex] ? war.phases[state.phaseIndex] : null;
+  }
+
+  function currentSides(war) {
+    var phase = currentPhase(war);
+    return phase ? { a: phase.a, b: phase.b } : war.sides;
+  }
+
   function updateTimeline(war) {
-    warYear.textContent = war.start;
+    var phase = currentPhase(war);
+    var focusYear = phase ? phase.from : war.start;
+    warYear.textContent = focusYear;
     warName.textContent = war.name;
-    warRange.textContent = war.start + '—' + war.end;
-    warPlayhead.style.left = percent(war.start) + '%';
+    warRange.textContent = phase
+      ? phase.from + '—' + phase.to + ' / ' + war.start + '—' + war.end
+      : war.start + '—' + war.end;
+    warPlayhead.style.left = percent(focusYear) + '%';
     Object.keys(barById).forEach(function (id) {
       barById[id].classList.toggle('is-on', id === war.id);
     });
@@ -172,9 +195,10 @@
   function renderSides(war) {
     var group = eraGroups.get(state.era);
     if (!group) return;
+    var sides = currentSides(war);
     var labelled = {};
     ['a', 'b'].forEach(function (sideKey) {
-      var side = war.sides[sideKey];
+      var side = sides[sideKey];
       if (!side) return;
       (side.polities || []).forEach(function (polity) {
         group.selectAll('.polity').each(function () {
@@ -198,8 +222,13 @@
 
   function renderBattles(war) {
     battleLayer.selectAll('*').remove();
+    var phase = currentPhase(war);
+    var battles = (war.battles || []).filter(function (battle) {
+      return !phase || (battle.year >= phase.from && battle.year <= phase.to);
+    });
+    if (!battles.length) battles = war.battles || [];
     var shown = 0;
-    (war.battles || []).forEach(function (battle) {
+    battles.forEach(function (battle) {
       if (shown >= 5) return;
       var xy = projection([battle.lon, battle.lat]);
       if (!xy || !isFinite(xy[0]) || !isFinite(xy[1])) return;
@@ -264,8 +293,18 @@
   }
 
   function renderWar(war) {
-    var sideA = war.sides.a;
-    var sideB = war.sides.b;
+    var sides = currentSides(war);
+    var sideA = sides.a;
+    var sideB = sides.b;
+    var phase = currentPhase(war);
+    var phaseStrip = '';
+    if (war.phases && war.phases.length) {
+      phaseStrip = '<div class="war-phase-strip">' + war.phases.map(function (item, index) {
+        return '<button type="button" class="war-phase' +
+          (index === state.phaseIndex ? ' is-on' : '') + '" data-phase="' + index + '">' +
+          item.from + '—' + item.to + '<span>' + escapeHtml(item.label) + '</span></button>';
+      }).join('') + '</div>';
+    }
     var battles = (war.battles || []).map(function (battle) {
       return '<li><b>' + battle.year + '</b><span>' + escapeHtml(battle.name) + '</span></li>';
     }).join('');
@@ -281,11 +320,13 @@
       '<button class="back-link" id="warBack">← 战争列表</button>' +
       '<div class="panel-kicker">战争线 · ' + war.start + '—' + war.end + '</div>' +
       '<h2>' + escapeHtml(war.name) + '</h2>' +
+      phaseStrip +
       '<div class="war-side-row">' +
       '<div class="war-side-chip a"><b>交战方 A</b><span>' + escapeHtml(sideA.label) + '</span></div>' +
       '<div class="war-side-chip b"><b>交战方 B</b><span>' + escapeHtml(sideB.label) + '</span></div>' +
       '</div>' +
       '<p class="panel-summary">' + escapeHtml(war.summary) + '</p>' +
+      (phase && phase.note ? '<p class="panel-note"><strong>本阶段：</strong>' + escapeHtml(phase.note) + '</p>' : '') +
       '<div class="panel-section"><h3>关键战役</h3><ul class="war-battle-list">' + battles + '</ul></div>' +
       '<p class="panel-note"><strong>结果：</strong>' + escapeHtml(war.outcome) + '</p>' +
       '<p class="panel-note">' + escapeHtml(war.note) + '</p>' +
@@ -294,26 +335,53 @@
 
     var back = document.getElementById('warBack');
     if (back) back.addEventListener('click', showIndex);
+    panelScroll.querySelectorAll('[data-phase]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        selectPhase(Number(button.getAttribute('data-phase')));
+      });
+    });
     panelScroll.scrollTop = 0;
     openPanel();
   }
 
-  function selectWar(id) {
+  function selectWar(id, phaseIndex) {
     var war = WARS.filter(function (item) { return item.id === id; })[0];
     if (!war) return;
     state.activeId = id;
-    var era = YEARS.indexOf(war.snapshot) !== -1 ? war.snapshot : nearestEra(war.start);
+    state.phaseIndex = war.phases && Number.isInteger(phaseIndex) && phaseIndex >= 0 && phaseIndex < war.phases.length
+      ? phaseIndex : 0;
+    var phase = currentPhase(war);
+    var era = YEARS.indexOf(phase && phase.snapshot ? phase.snapshot : war.snapshot) !== -1
+      ? (phase && phase.snapshot ? phase.snapshot : war.snapshot)
+      : nearestEra(war.start);
     if (era !== state.era) setEra(era);
     clearMapSelection();
     renderSides(war);
     renderBattles(war);
     renderWar(war);
     updateTimeline(war);
-    try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ }
+    var hash = war.phases && war.phases.length > 1 ? id + '/' + state.phaseIndex : id;
+    try { history.replaceState(null, '', '#' + hash); } catch (e) { /* file:// */ }
+  }
+
+  function selectPhase(index) {
+    var war = WARS.filter(function (item) { return item.id === state.activeId; })[0];
+    if (!war || !war.phases || !war.phases[index]) return;
+    state.phaseIndex = index;
+    var phase = war.phases[index];
+    var era = phase.snapshot && YEARS.indexOf(phase.snapshot) !== -1 ? phase.snapshot : state.era;
+    if (era !== state.era) setEra(era);
+    clearMapSelection();
+    renderSides(war);
+    renderBattles(war);
+    renderWar(war);
+    updateTimeline(war);
+    try { history.replaceState(null, '', '#' + war.id + '/' + index); } catch (e) { /* file:// */ }
   }
 
   function showIndex() {
     state.activeId = null;
+    state.phaseIndex = 0;
     clearMapSelection();
     if (state.era !== nearestEra(1700)) setEra(nearestEra(1700));
     renderIndex();
@@ -352,8 +420,10 @@
 
   /* ── 启动 ───────────────────────────────────────── */
   var hash = (location.hash || '').replace('#', '');
-  if (hash && WARS.some(function (war) { return war.id === hash; })) {
-    selectWar(hash);
+  var hashParts = hash.split('/');
+  var hashWar = WARS.filter(function (war) { return war.id === hashParts[0]; })[0];
+  if (hashWar) {
+    selectWar(hashWar.id, hashParts[1] ? Number(hashParts[1]) : 0);
   } else {
     selectWar(DEFAULT_WAR);
   }

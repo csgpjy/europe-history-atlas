@@ -70,10 +70,13 @@
   var SNAPSHOT_NOTES = {
     1500: '宗教改革前夜',
     1600: '三十年战争前夜',
+    1650: '威斯特伐利亚体系',
     1700: '西班牙王位继承战争前夕',
     1715: '乌得勒支体系',
     1783: '法国大革命前夜',
+    1800: '拿破仑战争前夜',
     1815: '维也纳体系',
+    1880: '民族国家定型',
     1900: '世纪之交',
   };
 
@@ -118,6 +121,17 @@
   if (ATLAS.land) svg.select('#land').attr('d', ATLAS.land);
   else svg.select('#land').remove();
   svg.select('#graticule').remove();
+  svg.select('#rivers').attr('d', (ATLAS.water && ATLAS.water.rivers) || '');
+  svg.select('#lakes').attr('d', (ATLAS.water && ATLAS.water.lakes) || '');
+
+  var cityLayer = svg.select('#cities');
+  (ATLAS.cities || []).forEach(function (city) {
+    var group = cityLayer.append('g').attr('transform', 'translate(' + city.x + ',' + city.y + ')');
+    group.append('circle').attr('class', 'city-dot').attr('r', city.r <= 1 ? 1.6 : 1.1);
+    if (city.r <= 1) {
+      group.append('text').attr('class', 'city-label').attr('x', 3).attr('y', 2).text(city.n);
+    }
+  });
 
   var projection = d3.geoConicConformal()
     .parallels([38, 62])
@@ -281,7 +295,7 @@
     panelScroll.innerHTML =
       '<div class="panel-kicker">阅读指南</div>' +
       '<h2>四百年，<em>' + EVENTS.length + ' 个切面</em></h2>' +
-      '<p class="panel-summary">地图以 1500 至 1900 年间的七个政权边界快照为骨架，串联 ' +
+      '<p class="panel-summary">地图以 1500 至 1900 年间的 ' + YEARS.length + ' 个政权边界快照为骨架，串联 ' +
       EVENTS.length + ' 个事件（核心 12 条、扩展 ' + EXTRA_COUNT + ' 条）。' +
       '拖动时间轴浏览时代，按政治 / 经济 / 文化 / 社会筛选，点击紫色菱形或地图脉冲标记查看史料与空间细节。</p>' +
       '<div class="panel-section"><h3>如何使用</h3><ul class="fact-list">' +
