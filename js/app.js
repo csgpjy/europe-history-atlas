@@ -649,6 +649,93 @@
     clearEvent();
   });
 
+  /* ── 主站内战争线视图 ─────────────────────────────── */
+  var warOverlay = document.getElementById('warOverlay');
+  var warOverlayBody = document.getElementById('warOverlayBody');
+  var warOverlayClose = document.getElementById('warOverlayClose');
+  var warLineLink = document.getElementById('warLineLink');
+  var warFrame = null;
+  var warReturnHash = '';
+
+  function warHashTarget() {
+    var raw = (location.hash || '').replace('#', '');
+    if (raw.indexOf('wars') !== 0) return null;
+    var rest = raw.slice(4).replace(/^\/+/, '');
+    return {
+      hash: rest,
+      src: 'wars.html?embed=1' + (rest ? '#' + rest : ''),
+    };
+  }
+
+  function openWarView(updateUrl) {
+    if (!warOverlay) return;
+    var target = warHashTarget() || { hash: '', src: 'wars.html?embed=1' };
+    if (updateUrl) {
+      warReturnHash = location.hash.indexOf('#wars') === 0 ? '' : location.hash;
+    }
+
+    if (warFrame && warFrame.getAttribute('data-target') !== target.src) {
+      warFrame.setAttribute('data-target', target.src);
+      warFrame.src = target.src;
+    }
+    if (!warFrame) {
+      warFrame = document.createElement('iframe');
+      warFrame.title = '战争线：1494–1878 年欧洲国家间战争';
+      warFrame.loading = 'lazy';
+      warFrame.setAttribute('data-target', target.src);
+      warFrame.src = target.src;
+      warOverlayBody.appendChild(warFrame);
+    }
+
+    warOverlay.hidden = false;
+    warOverlay.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('war-view-open');
+    requestAnimationFrame(function () { warOverlay.classList.add('is-open'); });
+    if (updateUrl) {
+      var nextHash = '#wars' + (target.hash ? '/' + target.hash : '');
+      try { history.replaceState(null, '', location.pathname + location.search + nextHash); } catch (e) { /* file:// */ }
+    }
+    setTimeout(function () { if (warOverlayClose) warOverlayClose.focus(); }, 80);
+  }
+
+  function closeWarView(updateUrl) {
+    if (!warOverlay || warOverlay.hidden) return;
+    warOverlay.classList.remove('is-open');
+    warOverlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('war-view-open');
+    setTimeout(function () {
+      if (warOverlay.classList.contains('is-open')) return;
+      warOverlay.hidden = true;
+      if (warFrame) {
+        warFrame.remove();
+        warFrame = null;
+      }
+    }, 260);
+    if (updateUrl !== false) {
+      try {
+        history.replaceState(null, '', location.pathname + location.search + (warReturnHash || ''));
+      } catch (e) { /* file:// */ }
+    }
+    if (warLineLink) warLineLink.focus();
+  }
+
+  if (warLineLink) {
+    warLineLink.addEventListener('click', function (event) {
+      event.preventDefault();
+      openWarView(true);
+    });
+  }
+  if (warOverlayClose) {
+    warOverlayClose.addEventListener('click', function () { closeWarView(true); });
+  }
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && warOverlay && !warOverlay.hidden) closeWarView(true);
+  });
+  window.addEventListener('hashchange', function () {
+    if (warHashTarget()) openWarView(false);
+    else if (warOverlay && !warOverlay.hidden) closeWarView(false);
+  });
+
   /* ── 启动 ───────────────────────────────────────── */
   var params = new URLSearchParams(location.search);
   var initialCategory = params.get('cat');
@@ -664,7 +751,9 @@
   setYear(INITIAL);
 
   var hash = (location.hash || '').replace('#', '');
-  if (hash && EVENTS.some(function (e) { return e.id === hash; })) {
+  if (warHashTarget()) {
+    openWarView(false);
+  } else if (hash && EVENTS.some(function (e) { return e.id === hash; })) {
     selectEvent(hash);
   }
 })();
