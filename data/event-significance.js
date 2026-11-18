@@ -47,3 +47,4 @@ window.EVENT_SIGNIFICANCE_SOURCES = {
   'revolutions-1848': '《世界史·近代史编》下卷（第2版），第五章',
   unification: '《世界史·近代史编》下卷（第2版），第五章第一节“俾斯麦与德国的统一”',
 };
+
