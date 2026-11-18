@@ -288,6 +288,24 @@ button { font: inherit; color: inherit; }
   color: var(--ink-mute);
 }
 
+.war-entry-link {
+  display: inline-block;
+  margin-top: 14px;
+  padding-bottom: 4px;
+  pointer-events: auto;
+  color: var(--gold);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201, 169, 97, 0.35);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.war-entry-link:hover {
+  color: #f3e8ff;
+  border-color: var(--violet);
+}
+
 .legend {
   position: absolute;
   top: 38px;
