@@ -444,6 +444,13 @@
   line-height: 1.8;
 }
 
+.war-impact .war-impact-source {
+  margin-top: 9px;
+  color: rgba(167, 173, 189, 0.72);
+  font-size: 8.5px;
+  line-height: 1.6;
+}
+
 @media (max-width: 940px) {
   .war-country-grid { grid-template-columns: 1fr; }
   .war-impact {
