@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="欧洲战争线：1494–1878 年各国之间的 14 场战争，交战双方、关键战役与教材出处。" />
+  <meta name="description" content="欧洲战争线：1494–1878 年各国之间的 14 场战争，交战双方、各国影响、条约、关键战役与教材出处。" />
   <meta name="theme-color" content="#0a0e17" />
   <meta name="application-name" content="EUROPA" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -43,6 +43,7 @@
         <g id="cities"></g>
         <g id="sideLabels"></g>
         <g id="battles"></g>
+        <g id="treaties"></g>
       </svg>
       <div class="map-grain" aria-hidden="true"></div>
       <div class="map-vignette" aria-hidden="true"></div>
@@ -70,6 +71,13 @@
       <div class="panel-scroll" id="warPanelScroll"></div>
     </aside>
 
+    <div class="war-impact" id="warImpact" hidden aria-live="polite">
+      <button class="war-impact-close" id="warImpactClose" type="button" aria-label="关闭国家影响">×</button>
+      <div class="war-impact-kicker" id="warImpactSide">交战方影响</div>
+      <h3 id="warImpactName">国家</h3>
+      <p id="warImpactText"></p>
+    </div>
+
     <section class="war-timeline" id="warTimeline" aria-label="战争时间轴">
       <div class="war-timeline-head">
         <div class="war-readout"><span id="warYear">1701</span><small>年</small></div>
@@ -96,6 +104,7 @@
   <script src="vendor/d3.min.js"></script>
   <script src="data/borders.js"></script>
   <script src="data/wars.js"></script>
+  <script src="data/war-details.js"></script>
   <script src="js/wars.js"></script>
   <script src="js/pwa.js" defer></script>
 </body>
