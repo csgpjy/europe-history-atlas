@@ -28,6 +28,9 @@ const core = loadWindow('data/events.js').HISTORY_EVENTS;
 const meta = loadWindow('data/events-meta.js').CORE_EVENT_META;
 const extra = loadWindow('data/events-extra.js').HISTORY_EVENTS_EXTRA;
 const wars = loadWindow('data/wars.js').HISTORY_WARS;
+const significance = loadWindow('data/event-significance.js').EVENT_SIGNIFICANCE;
+const significanceSources = loadWindow('data/event-significance.js').EVENT_SIGNIFICANCE_SOURCES;
+const warDetails = loadWindow('data/war-details.js').WAR_DETAILS;
 const events = core.concat(extra);
 
 events.forEach((event) => {
@@ -39,6 +42,15 @@ events.forEach((event) => {
 assert(atlas && Array.isArray(atlas.years), 'borders.js 缺少 ATLAS.years');
 assert(Array.isArray(events) && events.length >= 24, '事件总数少于 24');
 assert(Array.isArray(extra) && extra.length >= 12, '扩展事件少于 12 条');
+assert(significance && Object.keys(significance).length === events.length, '事件意义条目数与事件总数不一致');
+
+events.forEach((event) => {
+  assert(typeof significance[event.id] === 'string' && significance[event.id].length >= 35,
+    '事件意义缺失或过短：' + event.id);
+  const source = significanceSources[event.id] ||
+    (event.sources || []).find((item) => (item.label || '').includes('世界史·近代史编'));
+  assert(Boolean(source), '事件缺少教材依据：' + event.id);
+});
 
 const years = atlas.years.slice();
 assert(years.length >= 6, '边界快照少于 6 个');
@@ -65,7 +77,9 @@ const requiredFiles = [
   'data/events.js',
   'data/events-meta.js',
   'data/events-extra.js',
+  'data/event-significance.js',
   'data/wars.js',
+  'data/war-details.js',
   'data/research/index.json',
   'vendor/d3.min.js',
   'vendor/topojson-client.min.js',
@@ -85,6 +99,7 @@ for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/events.js', 'dat
 }
 assert(html.includes('href="wars.html"'), 'index.html 未链接战争线页面');
 assert(html.includes('href="research.html"'), 'index.html 未链接研究模式');
+assert(html.includes('data/event-significance.js'), 'index.html 未引用事件意义数据');
 assert(html.includes('href="manifest.webmanifest"'), 'index.html 未引用 manifest');
 assert(html.includes('src="js/pwa.js"'), 'index.html 未引用 pwa.js');
 assert(html.includes('id="warLineLink"') && html.includes('id="warOverlay"'), 'index.html 缺少主站战争视图');
@@ -97,6 +112,7 @@ for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/wars.js', 'js/wa
   assert(warHtml.includes('src="' + src + '"'), 'wars.html 未引用 ' + src);
 }
 assert(warHtml.includes('href="research.html"'), 'wars.html 未链接研究模式');
+assert(warHtml.includes('data/war-details.js'), 'wars.html 未引用战争详情数据');
 assert(warHtml.includes('href="manifest.webmanifest"'), 'wars.html 未引用 manifest');
 assert(warHtml.includes('src="js/pwa.js"'), 'wars.html 未引用 pwa.js');
 
@@ -188,6 +204,30 @@ for (const category of ['政治', '经济', '文化', '社会']) {
 }
 
 assert(Array.isArray(wars) && wars.length >= 12, '战争线少于 12 场战争');
+assert(warDetails && Object.keys(warDetails).length === wars.length, '战争详情条目数与战争数不一致');
+
+for (const war of wars) {
+  const detail = warDetails[war.id] || {};
+  const known = new Set();
+  for (const key of ['a', 'b']) (war.sides[key].polities || []).forEach((polity) => known.add(polity.name));
+  for (const phase of war.phases || []) {
+    for (const key of ['a', 'b']) (phase[key].polities || []).forEach((polity) => known.add(polity.name));
+  }
+  assert(detail.impacts && Object.keys(detail.impacts).length >= 2, '战争缺少各国影响：' + war.id);
+  for (const name of known) {
+    assert(detail.impacts && detail.impacts[name], '战争缺少该国影响：' + war.id + '/' + name);
+  }
+  for (const [name, impact] of Object.entries(detail.impacts || {})) {
+    assert(known.has(name), '战争影响中的国家不在交战方中：' + war.id + '/' + name);
+    assert(impact.side === 'a' || impact.side === 'b', '战争影响缺少有效阵营：' + war.id + '/' + name);
+    assert(typeof impact.text === 'string' && impact.text.length >= 20, '战争影响文字过短：' + war.id + '/' + name);
+  }
+  assert(Array.isArray(detail.treaties) && detail.treaties.length >= 1, '战争缺少条约：' + war.id);
+  for (const treaty of detail.treaties || []) {
+    assert(treaty.year && treaty.name && treaty.summary, '条约字段不完整：' + war.id);
+    assert(Number.isFinite(treaty.lon) && Number.isFinite(treaty.lat), '条约缺少坐标：' + war.id);
+  }
+}
 const warIds = new Set();
 for (const war of wars) {
   const prefix = '战争 ' + (war.name || '(无名称)');
