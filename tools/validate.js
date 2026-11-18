@@ -58,8 +58,11 @@ const requiredFiles = [
   'data/events-meta.js',
   'data/events-extra.js',
   'data/wars.js',
+  'data/research/index.json',
   'vendor/d3.min.js',
   'vendor/topojson-client.min.js',
+  'vendor/maplibre-gl.js',
+  'vendor/maplibre-gl.css',
 ];
 for (const file of requiredFiles) {
   assert(fs.existsSync(path.join(root, file)), '缺少文件：' + file);
@@ -85,11 +88,20 @@ for (const src of ['vendor/d3.min.js', 'data/borders.js', 'data/wars.js', 'js/wa
 assert(warHtml.includes('href="research.html"'), 'wars.html 未链接研究模式');
 
 const researchHtml = fs.readFileSync(path.join(root, 'research.html'), 'utf8');
-for (const id of ['researchYear', 'researchYearOut', 'ohmLoad', 'ohmUnload', 'ohmFrameWrap', 'ohmStatus']) {
+for (const id of ['researchYear', 'researchYearOut', 'ohmLoad', 'ohmUnload', 'ohmFrameWrap', 'ohmStatus', 'mapYear', 'mapLoad', 'mapUnload', 'researchMap', 'mapStatus']) {
   assert(researchHtml.includes('id="' + id + '"'), 'research.html 缺少 #' + id);
 }
 for (const src of ['js/research.js']) {
   assert(researchHtml.includes('src="' + src + '"'), 'research.html 未引用 ' + src);
+}
+
+const researchIndex = JSON.parse(fs.readFileSync(path.join(root, 'data', 'research', 'index.json'), 'utf8'));
+assert(Array.isArray(researchIndex.years) && researchIndex.years.length === 10, 'research/index.json 快照数量不为 10');
+for (const year of researchIndex.years) {
+  const file = path.join(root, 'data', 'research', year + '.geojson');
+  assert(fs.existsSync(file), '缺少研究模式快照：' + year);
+  const collection = JSON.parse(fs.readFileSync(file, 'utf8'));
+  assert(collection.type === 'FeatureCollection' && collection.features.length >= 10, '研究模式快照过小：' + year);
 }
 
 const ids = new Set();

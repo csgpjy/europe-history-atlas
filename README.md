@@ -12,7 +12,7 @@
 - **水系与城市**：叠加 Natural Earth 50m 河流、湖泊与主要城市点，便于理解战争与交通的地理条件。
 - **四类事件与两级深度**：政治、经济、文化、社会四类筛选；默认展示 12 条核心事件，可展开 18 条扩展事件，避免时间轴拥挤。
 - **独立战争线**：`wars.html` 单列 1494–1878 年 14 场国家间战争，紫、金两色区分交战双方，附关键战役、结果与教材章节；三十年战争、七年战争、拿破仑战争支持阶段切换。
-- **研究模式**：`research.html` 独立入口，默认不加载外部服务；点击后才创建 OpenHistoricalMap iframe 并记录加载耗时，附 Cliopatria 数据与授权说明。
+- **研究模式**：`research.html` 独立入口，默认不加载外部服务；点击后加载本地 MapLibre 与单年 GeoJSON，附 OHM 外部对照和 Cliopatria 数据/授权说明。
 - **事件驱动的高亮**：点击事件菱形或地图脉冲标记，相关政权以紫色高亮；核心政权（如西班牙哈布斯堡）与参战方分两级呈现。
 - **深色沉浸式视觉**：藏蓝底 `#0a0e17`、羊皮纸噪点、暗角、青色发光国界 `#22d3ee`、紫色事件区 `#a855f7`、细金线玻璃拟态知识面板。
 - **零依赖运行**：D3 与历史边界均已本地化，`file://` 直接打开也能用；无框架、无构建步骤（CI 仅负责生成数据）。
@@ -57,21 +57,23 @@ node tools/build_borders.js  # 裁剪、简化、预投影 → data/borders.js
 ```
 index.html              时代全景：地图、时间轴、分类筛选、知识面板
 wars.html               战争线：14 场国家间战争、双方阵营、阶段与战役
-research.html           研究模式：OHM iframe 原型 + Cliopatria 数据说明
+research.html           研究模式：MapLibre 自托管原型 + OHM 对照 + Cliopatria 说明
 css/style.css           视觉系统（设计令牌、玻璃拟态、时间轴）
 css/wars.css            战争线专属样式
 css/research.css        研究模式样式
 js/app.js               主页面交互
 js/wars.js              战争线交互（双方高亮、战争带、阶段）
-js/research.js          研究模式按需加载与耗时记录
+js/research.js          研究模式按需加载、MapLibre 与耗时记录
 data/events.js          12 条核心事件：年代、摘要、关键节点、出处、高亮选择器
 data/events-extra.js    18 条扩展事件：政治 / 经济 / 文化 / 社会，附教材章节
 data/events-meta.js     核心事件的分类元数据
-data/wars.js            14 场战争：双方阵营、战役、结果、教材出处
+data/wars.js            14 场战争：双方阵营、阶段、战役、结果、教材出处
+data/research/          生成物：MapLibre 研究模式单年 GeoJSON 快照
 data/borders.js         生成物：十个年份的预投影 SVG 路径、水系与城市点
-tools/fetch_assets.js   下载原始边界与 D3
+tools/fetch_assets.js   下载原始边界、D3、MapLibre 与 Natural Earth 图层
 tools/build_borders.js  裁剪 / 简化 / 投影 / 生成标签质心
-tools/validate.js       事件、战争与构建产物校验
+tools/build_research_geojson.js  生成 MapLibre 研究模式单年 GeoJSON
+tools/validate.js       事件、战争、研究数据与构建产物校验
 .github/workflows/pages.yml
 ```
 
